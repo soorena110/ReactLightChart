@@ -5,7 +5,6 @@ import HoverLayer from "./HoverLayer/index";
 import AxisNumbers from "./AxisNumbers/index";
 import {LineChartProps} from "./models";
 
-
 export default class LineChart extends React.Component<LineChartProps> {
     private _dataMapper: PointMapper;
 
@@ -28,13 +27,10 @@ export default class LineChart extends React.Component<LineChartProps> {
     render() {
         const style = Object.assign({}, {height: '100%', width: '100%', position: 'relative'}, this.props.style);
 
-        return <div style={style}>
-            <Graph {...this.props}
-                   dataMapper={this._dataMapper}/>
-            <HoverLayer {...this.props}
-                        dataMapper={this._dataMapper}/>
-            <AxisNumbers {...this.props}
-                         dataMapper={this._dataMapper}/>
+        return <div style={style} className={this.props.className}>
+            <Graph {...this.props} dataMapper={this._dataMapper}/>
+            <HoverLayer {...this.props} dataMapper={this._dataMapper}/>
+            <AxisNumbers {...this.props} dataMapper={this._dataMapper}/>
         </div>
     }
 

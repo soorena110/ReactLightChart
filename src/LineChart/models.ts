@@ -15,6 +15,7 @@ export interface LineChartProps {
     axisOptions?: { shownIndexesCount: number, shownValuesCount: number };
 
     style?: React.CSSProperties;
+    className?: string;
 }
 
 export const chartOffset = {left: 0, bottom: 10, right: 0, top: 2, width: 100, height: 100};

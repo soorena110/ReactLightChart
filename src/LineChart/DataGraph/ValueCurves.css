@@ -1,0 +1,12 @@
+.line-chart-data-polygon {
+    stroke: transparent;
+    stroke-width: 0;
+    fill-opacity: .2;
+}
+
+.line-chart-data-polyline {
+    fill: transparent;
+    stroke-linecap: round;
+    stroke-width: .3px;
+    stroke-opacity: .8;
+}

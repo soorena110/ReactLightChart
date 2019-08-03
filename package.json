@@ -1,0 +1,49 @@
+{
+  "name": "react-light-chart",
+  "version": "1.0.0",
+  "description": "A simple and light library to draw charts.",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "scripts": {
+    "clean": "rimraf dist",
+    "start": "webpack-dev-server -d --env.dev",
+    "build": "npm run clean & webpack -p --env.prod",
+    "postbuild": "tsc --emitDeclarationOnly --declaration",
+    "deploy": "npm run build & npm run build:dev & npm run postbuild & npm publish --access=public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soorena110/ReactLightChart.git"
+  },
+  "keywords": [
+    "react",
+    "chart",
+    "react chart",
+    "line chart",
+    "simple chart"
+  ],
+  "author": "MohammadReza Azarang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/soorena110/ReactLightChart/issues"
+  },
+  "homepage": "https://github.com/soorena110/ReactLightChart#readme",
+  "devDependencies": {
+    "awesome-typescript-loader": "^5.2.1",
+    "rimraf": "^2.6.3",
+    "typescript": "^3.4.5",
+    "uglifyjs-webpack-plugin": "^2.1.2",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.1",
+    "webpack-dev-server": "^3.7.1",
+    "react": "^16.8.6",
+    "style-loader": "^0.23.1",
+    "css-loader": "^1.0.1",
+    "react-dom": "^16.8.6",
+    "@types/react": "^16.8.23",
+    "@types/react-dom": "^16.8.5"
+  },
+  "dependencies": {
+    "persian-info": "^0.7.3"
+  }
+}

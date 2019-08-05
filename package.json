@@ -20,7 +20,11 @@
     "chart",
     "react chart",
     "line chart",
-    "simple chart"
+    "area chart",
+    "simple chart",
+    "vertical chart",
+    "vertical line chart",
+    "vertical area chart"
   ],
   "author": "MohammadReza Azarang",
   "license": "ISC",

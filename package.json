@@ -1,6 +1,6 @@
 {
   "name": "react-light-chart",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A simple and light library to draw charts.",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
@@ -48,6 +48,6 @@
     "@types/react-dom": "^16.8.5"
   },
   "dependencies": {
-    "persian-info": "^0.7.3"
+    "persian-info": "^0.7.4"
   }
 }

@@ -12,7 +12,7 @@ class MainApplication extends React.Component {
             require('./lineChartProps1.json'),
             require('./lineChartProps2.json'),
         ];
-        return lineChartProps.map(props => <div style={{width: 500, height: 400}}>
+        return lineChartProps.map(props => <div style={{width: 500, height: 400, zoom: 1.11}}>
             <LineChart {...props}/>
         </div>)
     }

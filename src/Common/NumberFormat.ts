@@ -1,4 +1,7 @@
-export const shortenNumber = (number: number, toFix = 3, minimumValue = 1000) => {
+export const shortenNumber = (number: number | string, toFix = 3, minimumValue = 1000) => {
+    if (typeof number == 'string')
+        number = Number(number);
+
     if (number < minimumValue)
         return number;
 

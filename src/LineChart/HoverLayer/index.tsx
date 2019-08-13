@@ -42,8 +42,18 @@ export default class LineChartMouseIndicator extends React.Component<Props, Stat
     private _handleMouseMove(e: React.MouseEvent<any>) {
         const bound = e.currentTarget.getBoundingClientRect();
 
-        const horizonalXAxis = ((e.clientX - bound.x) / bound.width);
-        const verticalXAxis = ((e.clientY - bound.y) / bound.height);
+        const effectiveBound = {
+            left: chartOffset.left / chartOffset.width * bound.width,
+            top: chartOffset.top / chartOffset.height * bound.height,
+            width: (1 - (chartOffset.left + chartOffset.right) / chartOffset.width) * bound.width,
+            height: (1 - (chartOffset.top + chartOffset.bottom) / chartOffset.height) * bound.height
+        };
+
+        const effectiveOffsetX = e.clientX - bound.x - effectiveBound.left;
+        const horizonalXAxis = effectiveOffsetX / effectiveBound.width;
+
+        const effectiveOffsetY = e.clientY - bound.y - effectiveBound.top;
+        const verticalXAxis = effectiveOffsetY / effectiveBound.height;
         let mouseXByPercent = this.props.isVertical ? verticalXAxis : horizonalXAxis;
 
         if (mouseXByPercent < 0)
@@ -123,7 +133,7 @@ export default class LineChartMouseIndicator extends React.Component<Props, Stat
                 </div>
             ))}
             <div style={{textAlign: 'center'}}>
-                {xValueInThisIndex}
+                {this.props.isIndexesAsNumber ? Persian.number.formatPrice(xValueInThisIndex) : xValueInThisIndex}
             </div>
         </span>
     }

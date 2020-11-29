@@ -1,26 +1,39 @@
 import * as React from 'react';
+import {useState} from 'react';
 import {render} from "react-dom";
 import LineChart from "../LineChart";
+import {data3} from "./lineChartProps3";
+import {data1} from "./lineChartProps1";
+import {data2} from "./lineChartProps2";
 
-declare const module: any;
+const lineChartExamples = [
+    {data: data1, name: 'Horizonal'},
+    {data: data2, name: 'Just a line'},
+    {data: data3, name: 'Linear Gradient'},
+];
 
-class MainApplication extends React.Component {
+function DemoApplication() {
+    const [selectedChart, setSelectedChart] = useState(0)
+    const selectedChartProps = lineChartExamples[selectedChart].data;
 
 
-    render() {
-        const lineChartProps = [
-            require('./lineChartProps1.json'),
-            require('./lineChartProps2.json'),
-        ];
-        return lineChartProps.map(props => <div style={{width: 500, height: 400, zoom: 1.11}}>
-            <LineChart {...props}/>
-        </div>)
-    }
+    return <>
+        <label>
+            select the chart type: {' '}
+            <select value={selectedChart} onChange={e => setSelectedChart(Number(e.target.value))}>
+                {lineChartExamples.map((r, ix) =>
+                    <option value={ix} key={ix}>{r.name}</option>
+                )}
+            </select>
+        </label>
+        <LineChart {...selectedChartProps} style={{width: 500, height: 400}}/>
+    </>
 }
 
 render(
-    <MainApplication/>,
+    <DemoApplication/>,
     document.getElementById("root")
 );
 
+declare const module: any;
 module.hot.accept();

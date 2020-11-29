@@ -1,10 +1,11 @@
-export type PointList = { [ix: string]: number };
+import {PointListType} from "../models";
+
 export default class PointMapper {
-    private readonly _valuesList: PointList[];
-    private readonly _indexes: string[];
+    private readonly _valuesList: PointListType[];
+    private readonly _indexes: (string | number)[];
     private readonly _mappingYsToPxParameters: { min: number, max: number };
 
-    constructor(indexes: string[], valuesList: PointList[]) {
+    constructor(indexes: (string | number)[], valuesList: PointListType[]) {
         this._valuesList = valuesList;
         this._indexes = indexes;
 
@@ -13,9 +14,8 @@ export default class PointMapper {
 
     getPointPosition(index: number, value: number) {
         const minAndMaxY = this._mappingYsToPxParameters;
-        const x = index / this._indexes.length;
+        const x = index / (this._indexes.length - 1);
         const y = (value - minAndMaxY.min) / (minAndMaxY.max - minAndMaxY.min);
-
         return {x, y};
     }
 
@@ -28,7 +28,7 @@ export default class PointMapper {
     }
 
     private _computeMinValueAndMaxValue() {
-        const ret = {min: 0, max: 0};
+        const ret = {min: Number.MAX_SAFE_INTEGER, max: Number.MIN_SAFE_INTEGER};
 
         this._valuesList.forEach(ys =>
             this._indexes.forEach(x => {

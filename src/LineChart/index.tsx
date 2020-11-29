@@ -1,38 +1,64 @@
 import * as React from 'react';
+import {useMemo} from 'react';
 import {default as PointMapper} from "./PointMapper/index";
-import Graph from "./DataGraph/index";
-import HoverLayer from "./HoverLayer/index";
-import AxisNumbers from "./AxisNumbers/index";
 import {LineChartProps} from "./models";
-
-export default class LineChart extends React.Component<LineChartProps> {
-    private _dataMapper: PointMapper;
-
-    constructor(props: LineChartProps) {
-        super(props);
-        this._dataMapper = new PointMapper(props.indexes, props.valuesList)
-    }
-
-    static defaultProps: Partial<LineChartProps> = {
-        axisOptions: {shownIndexesCount: 4, shownValuesCount: 3}
-    };
-
-    componentWillReceiveProps(props: LineChartProps) {
-        this._dataMapper = new PointMapper(props.indexes, props.valuesList)
-    }
-
-    //#region Render
+import {ChartOffsetsInfo, contextObject} from "./context";
+import ValueCurves from "./ValueCurves";
+import AxisLines from "./AxisLines";
+import HoverLayer from "./HoverLayer";
+import AxisNumbers from "./AxisNumbers";
 
 
-    render() {
-        const style = Object.assign({}, {height: '100%', width: '100%', position: 'relative'}, this.props.style);
+export default function LineChart(props: LineChartProps) {
+    const dataMapper = useMemo(() => new PointMapper(props.indexes, props.valuesList), [props.indexes, props.valuesList])
 
-        return <div style={style} className={this.props.className}>
-            <Graph {...this.props} dataMapper={this._dataMapper}/>
-            <HoverLayer {...this.props} dataMapper={this._dataMapper}/>
-            <AxisNumbers {...this.props} dataMapper={this._dataMapper}/>
+    const style: React.CSSProperties = useMemo(() => ({
+        height: '100%',
+        width: '100%',
+        position: 'relative',
+        ...props.style
+    }), [props.style]);
+
+    const offsets = useMemo(() => getChartOffset(props), [props])
+
+    const Provider = contextObject.Provider
+    return <Provider value={{dataMapper, props, offsets}}>
+        <div style={style} className={props.className}>
+            <svg width="100%" height="100%" preserveAspectRatio="none"
+                 viewBox={`0 0 100 100`}
+                 version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+                <AxisLines/>
+                <ValueCurves/>
+            </svg>
+            <HoverLayer/>
+            <AxisNumbers/>
         </div>
-    }
-
-    //#endregion
+    </Provider>
 }
+
+
+export function getChartOffset(chartProps: LineChartProps): ChartOffsetsInfo {
+    return {
+        left: 5,
+        bottom: 8,
+        right: 0,
+        top: 2,
+        width: 100,
+        height: 100,
+
+        get innerHeight() {
+            return this.height - this.bottom - this.top
+        },
+        get innerWidth() {
+            return this.width - this.right - this.left
+        },
+        ...chartProps.overrideSizes
+    }
+}
+
+
+LineChart.defaultProps = {
+    axis: {
+        indexes: {shownCount: 4}, values: {shownCount: 3}
+    }
+} as Partial<LineChartProps>

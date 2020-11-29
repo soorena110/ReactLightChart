@@ -1,7 +1,6 @@
 .line-chart-data-polygon {
     stroke: transparent;
     stroke-width: 0;
-    fill-opacity: .2;
 }
 
 .line-chart-data-polyline {

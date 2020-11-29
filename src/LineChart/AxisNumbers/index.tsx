@@ -1,113 +1,84 @@
 import * as React from "react";
-import {default as PointMapper} from "../PointMapper/index";
-import {chartOffset, LineChartProps} from "../models";
+import {useChartContext} from "../context";
 import './style.css';
-import Persian from "persian-info";
-import {shortenNumber} from "../../Common/NumberFormat";
 
-interface Props extends LineChartProps {
-    dataMapper: PointMapper;
+export default function AxisNumbers() {
+    return <>
+        {renderIndexesNumbers()}
+        {renderValuesNumbers()}
+    </>
 }
 
-interface State {
-    mouseXByPercent?: number;
+function renderIndexesNumbers() {
+    const {props, offsets} = useChartContext();
+
+    const verticalShownValuesCount = props.axis?.indexes?.shownCount;
+    if (!verticalShownValuesCount)
+        return null;
+
+    const lineXDistance = offsets.innerWidth / verticalShownValuesCount;
+
+    const shownIndexes = [];
+    for (let lineIndex = 0; lineIndex < verticalShownValuesCount; lineIndex++)
+        shownIndexes.push(props.indexes[Math.round(lineIndex * props.indexes.length / verticalShownValuesCount)]);
+    shownIndexes.push(props.indexes[props.indexes.length - 1]);
+
+    return createVerticalLine(shownIndexes, lineXDistance);
 }
 
-export default class AxisNumbers extends React.Component<Props, State> {
 
-    private _getDisplayNumber(value: number, isVerticalAxis: boolean) {
-        const isAsNumber = (isVerticalAxis ? !!this.props.isVertical : !this.props.isVertical) || !!this.props.isIndexesAsNumber;
-        const shouldShorten = isVerticalAxis ? !!this.props.isVertical : !this.props.isVertical;
+function renderValuesNumbers() {
+    const {props, offsets, dataMapper} = useChartContext();
 
-        if (shouldShorten)
-            return shortenNumber(value);
-        else if (isAsNumber)
-            return Persian.number.formatPrice(value);
-        return value;
-    }
+    const horizontalShownValuesCount = props.axis?.values?.shownCount;
+    if (!horizontalShownValuesCount)
+        return null;
 
-    private _createVerticalLine(valueStops: any[], lineXDistance: number) {
-        return valueStops.map((valueStop, lineIndex) => {
-            const value = this._getDisplayNumber(valueStop, true);
+    const lineYDistance = offsets.innerHeight / horizontalShownValuesCount;
 
-            return <span key={"ver_" + lineIndex}
-                         className="line-chart-axis-number"
-                         style={{
-                             top: chartOffset.height - chartOffset.bottom + 2 + '%',
-                             left: lineIndex != valueStops.length - 1 ?
-                                 chartOffset.left + lineXDistance * lineIndex + 1 + '%' :
-                                 undefined,
-                             right: lineIndex == valueStops.length - 1 ? 0 : undefined,
-                             transform: lineIndex != valueStops.length - 1 && lineIndex != 0 ? 'translateX(-50%)' : undefined
-                         }}>
-                    {value}
-                </span>
-        });
-    };
+    const minAndMaxY = dataMapper.getMinAndMaxValue();
 
-    private _createHorizonalLine(valueStops: any[], lineYDistance: number) {
-        return valueStops.map((valueStop, lineIndex) => {
-            const value = this._getDisplayNumber(valueStop, false);
+    const shownValues = [];
+    for (let lineIndex = 0; lineIndex <= horizontalShownValuesCount; lineIndex++)
+        shownValues.push(Math.round(minAndMaxY.max - lineIndex * (minAndMaxY.max - minAndMaxY.min) / horizontalShownValuesCount));
 
-            return <span key={"hor_" + lineIndex}
-                         className={"line-chart-axis-number"}
-                         style={{
-                             top: `calc(${chartOffset.top + lineYDistance * lineIndex}% - ${
-                                 lineIndex == 0 ? 5 :
-                                     lineIndex == valueStops.length - 1 ? 17 : 10}px)`,
-                             left: chartOffset.left + 1 + '%'
-                         }}>
-                {value}
-                </span>
-        });
-    };
+    return createHorizontalLine(shownValues, lineYDistance);
+}
 
-    private _getVerticalAndHorizonalShownValuesCountOnGrid() {
-        if (!this.props.axisOptions)
-            return {verticalShownValuesCount: 0, horizonalShownValuesCount: 0};
+function createVerticalLine(valueStops: any[], lineXDistance: number) {
+    const {offsets, props} = useChartContext();
 
-        const verticalShownValuesCount = !this.props.isVertical ? this.props.axisOptions.shownIndexesCount : this.props.axisOptions.shownValuesCount;
-        const horizonalShownValuesCount = !this.props.isVertical ? this.props.axisOptions.shownValuesCount : this.props.axisOptions.shownIndexesCount;
-        return {verticalShownValuesCount, horizonalShownValuesCount}
-    }
+    return valueStops.map((value, lineIndex) =>
+        <span key={"ver_" + lineIndex}
+              className="line-chart-axis-number"
+              style={{
+                  top: `calc(${offsets.height}% - 2em)`,
+                  left: lineIndex != valueStops.length - 1 ?
+                      offsets.left + lineXDistance * lineIndex + '%' :
+                      undefined,
+                  right: lineIndex == valueStops.length - 1 ? 0 : undefined,
+                  transform: (lineIndex != valueStops.length - 1 && lineIndex != 0 ? 'translateX(-50%)' : '') +
+                  props.axis?.indexes?.rotation ? ` rotate(${props.axis?.indexes?.rotation}deg)` : ''
+              }}>
+            {props.axis?.indexes?.renderLabels ? props.axis?.indexes?.renderLabels(value) : value}
+        </span>
+    );
+}
 
-    private _getDistancesBetweenGridLines() {
-        if (!this.props.axisOptions)
-            return {lineXDistance: 0, lineYDistance: 0};
+function createHorizontalLine(valueStops: any[], lineYDistance: number) {
+    const {offsets, props} = useChartContext();
 
-        const lineXDistance = (chartOffset.width - chartOffset.left - chartOffset.right) / this.props.axisOptions.shownIndexesCount;
-        const lineYDistance = (chartOffset.height - chartOffset.bottom - chartOffset.top) / this.props.axisOptions.shownValuesCount;
-        return {lineXDistance, lineYDistance}
-    }
-
-    render() {
-        if (!this.props.axisOptions)
-            return;
-
-        const {lineXDistance, lineYDistance} = this._getDistancesBetweenGridLines();
-        const minAndMaxY = this.props.dataMapper.getMinAndMaxValue();
-
-        const shownIndexes = [];
-        const shownValues = [];
-
-        const {verticalShownValuesCount, horizonalShownValuesCount} = this._getVerticalAndHorizonalShownValuesCountOnGrid();
-
-        for (let lineIndex = 0; lineIndex < verticalShownValuesCount; lineIndex++)
-            shownIndexes.push(this.props.indexes[Math.round(lineIndex * this.props.indexes.length / verticalShownValuesCount)]);
-        shownIndexes.push(this.props.indexes[this.props.indexes.length - 1]);
-
-        for (let lineIndex = 0; lineIndex <= horizonalShownValuesCount; lineIndex++)
-            shownValues.push(Math.round(minAndMaxY.max - lineIndex * (minAndMaxY.max - minAndMaxY.min) / horizonalShownValuesCount));
-
-        let valueStops = shownIndexes as any[];
-        if (this.props.isVertical) {
-            valueStops = [...shownValues];
-            valueStops.reverse()
-        }
-        const verticalLines = this._createVerticalLine(valueStops, lineXDistance);
-
-        const horizonalLines = this._createHorizonalLine(!this.props.isVertical ? shownValues : shownIndexes, lineYDistance);
-
-        return [...verticalLines, ...horizonalLines];
-    }
+    return valueStops.map((value, lineIndex) =>
+        <span key={"hor_" + lineIndex}
+              className={"line-chart-axis-number"}
+              style={{
+                  top: `calc(${offsets.top + lineYDistance * lineIndex}% - ${
+                      lineIndex == 0 ? 5 :
+                          lineIndex == valueStops.length - 1 ? 17 : 10}px)`,
+                  left: 0,
+                  transform: props.axis?.values?.rotation ? ` rotate(${props.axis?.indexes?.rotation}deg)` : ''
+              }}>
+            {props.axis?.values?.renderLabels ? props.axis?.values?.renderLabels(value) : value}
+        </span>
+    );
 }

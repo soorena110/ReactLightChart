@@ -1,9 +1,9 @@
 import {LineChartProps} from "..";
 
-const indexes = new Array(300).fill(1).map((r, ix) => ix);
+const indexes = new Array(300).fill(1).map((_, ix) => ix);
 const valuesList1 = {} as any;
 let x = 100;
-indexes.forEach((r, ix) =>
+indexes.forEach((_, ix) =>
     valuesList1[ix] = x += Math.random() * 10 - 5)
 
 export const data3: LineChartProps = {

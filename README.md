@@ -21,9 +21,9 @@ yarn add react-light-chart
 
 ## Images
 
-<img src="./readme/1.PNG"/>
-<img src="./readme/2.PNG"/>
-<img src="./readme/3.PNG"/>
+<img src="./readme/1.png"/>
+<img src="./readme/2.png"/>
+<img src="./readme/3.png"/>
 
 ## Parameters
 

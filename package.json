@@ -1,20 +1,29 @@
 {
   "name": "react-light-chart",
-  "version": "2.0.0",
+  "version": "2.0.11",
   "description": "A simple and light library to draw charts.",
-  "main": "./dist/index.js",
-  "typings": "./dist/index.d.ts",
   "scripts": {
-    "clean": "rimraf dist",
-    "start": "webpack-dev-server -d --env.dev",
-    "build": "npm run clean & webpack -p --env.prod",
-    "postbuild": "tsc --emitDeclarationOnly --declaration",
-    "deploy": "npm run build & npm run build:dev & npm run postbuild & npm publish --access=public"
+    "ts-build": "rimraf ./dist/** && tsc",
+    "babel-build": "rimraf ./dist/** && babel ./src --out-dir dist --extensions '.ts,.tsx'",
+    "travis-deploy-once": "travis-deploy-once",
+    "semantic-release": "semantic-release",
+    "watch": "tsc -- --watch",
+    "test": "jest",
+    "deploy": "npm run ts-build && npm publish --access=public"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/soorena110/ReactLightChart.git"
+    "url": "https://github.com/soorena110/ReactLightChart"
   },
+  "bugs": {
+    "url": "https://github.com/soorena110/ReactLightChart/issues"
+  },
+  "homepage": "https://github.com/soorena110/ReactLightChart",
+  "files": [
+    "dist"
+  ],
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
   "keywords": [
     "react",
     "chart",
@@ -26,28 +35,38 @@
     "vertical line chart",
     "vertical area chart"
   ],
-  "author": "MohammadReza Azarang",
+  "author": "MohammadReza Azarang.",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/soorena110/ReactLightChart/issues"
-  },
-  "homepage": "https://github.com/soorena110/ReactLightChart#readme",
-  "devDependencies": {
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
-    "css-loader": "^5.0.1",
-    "awesome-typescript-loader": "^5.2.1",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "rimraf": "^3.0.2",
-    "style-loader": "^2.0.0",
-    "typescript": "^4.1.2",
-    "uglifyjs-webpack-plugin": "^2.2.0",
-    "webpack": "^4.30.0",
-    "webpack-cli": "^3.3.1",
-    "webpack-dev-server": "^3.7.1"
-  },
   "dependencies": {
-    "persian-info": "^0.7.4"
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.4",
+    "@babel/plugin-proposal-class-properties": "^7.3.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.3.4",
+    "@babel/plugin-transform-typescript": "^7.3.2",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/jest": "^24.0.9",
+    "@types/react": "^16.8.5",
+    "@types/react-dom": "^16.8.2",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.10.0",
+    "jest": "^24.1.0",
+    "react-test-renderer": "^16.8.3",
+    "rimraf": "^3.0.2",
+    "semantic-release": "^15.13.3",
+    "ts-jest": "^24.0.0",
+    "tslint": "^5.13.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-react": "^3.6.0",
+    "typescript": "^4.1.2"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*",
+    "react-native": "*"
   }
 }

@@ -2,7 +2,6 @@ import * as React from "react";
 import {useCallback, useState} from "react";
 import {ChartContextInfo, useChartContext} from "../context";
 import {LineChartProps} from "../models";
-import './style.css';
 
 
 export default function HoverLayer() {
@@ -50,7 +49,7 @@ function renderTooltip(mouseXByPercent?: number) {
     const {props} = context;
 
     if (mouseXByPercent == undefined)
-        return;
+        return null;
 
     const currentIndex = Math.round(mouseXByPercent * props.indexes.length);
     const xValueInThisIndex = props.indexes[currentIndex];
@@ -65,13 +64,13 @@ function renderTooltip(mouseXByPercent?: number) {
 
     const values = yValuesInThisIndex.map(({value}) => value)
 
-    return <span className="line-chart-tooltip"
-                 style={{
-                     top: y < 50 ? y + fixOffset + '%' : undefined,
-                     bottom: y < 50 ? undefined : 100 - y + fixOffset + '%',
-                     left: x < 50 ? x + fixOffset + '%' : undefined,
-                     right: x < 50 ? undefined : 100 - x + fixOffset + '%'
-                 }}>
+    return <span style={{
+        ...s.lineChartTooltip,
+        top: y < 50 ? y + fixOffset + '%' : undefined,
+        bottom: y < 50 ? undefined : 100 - y + fixOffset + '%',
+        left: x < 50 ? x + fixOffset + '%' : undefined,
+        right: x < 50 ? undefined : 100 - x + fixOffset + '%'
+    }}>
         {props.renderTooltip
             ? props.renderTooltip({index: xValueInThisIndex, values, arrayIndex: currentIndex}, props)
             : renderDefaultTooltip({index: xValueInThisIndex, values, arrayIndex: currentIndex}, props)}
@@ -98,7 +97,7 @@ function renderSelectorLine(mouseXByPercent?: number) {
     const {props, offsets} = context;
 
     if (mouseXByPercent == undefined)
-        return;
+        return null;
 
     const currentIndex = Math.round(mouseXByPercent * props.indexes.length);
     const xValueInThisIndex = props.indexes[currentIndex];
@@ -115,19 +114,19 @@ function renderSelectorLine(mouseXByPercent?: number) {
             <circle cx={thePointPosition.x + '%'}
                     cy={thePointPosition.y + '%'}
                     r={3}
-                    className="line-chart-selection-symbol"
+                    style={s.lineChartSelectionSymbol}
                     stroke={color}/>
-            <line className="line-chart-selection-line"
-                  x1={thePointPosition.x + '%'}
+            <line x1={thePointPosition.x + '%'}
                   x2={thePointPosition.x + '%'}
                   y1={offsets.top + '%'}
                   y2={offsets.height - offsets.bottom + '%'}
+                  style={s.lineChartSelectionLine}
                   stroke={color}/>
-            <line className="line-chart-selection-line"
-                  x1={offsets.left + '%'}
+            <line x1={offsets.left + '%'}
                   x2={offsets.width - offsets.right + '%'}
                   y1={thePointPosition.y + '%'}
                   y2={thePointPosition.y + '%'}
+                  style={s.lineChartSelectionLine}
                   stroke={color}/>
         </React.Fragment>
     });
@@ -140,4 +139,24 @@ function getPointPosition(index: number, value: number, {offsets, dataMapper}: C
         x: x * (offsets.innerWidth) + offsets.left,
         y: (1 - y) * (offsets.innerHeight) + offsets.top
     }
+}
+
+const s = {
+    lineChartSelectionSymbol: {
+        strokeWidth: 2,
+        fill: 'transparent'
+    } as React.CSSProperties,
+
+    lineChartSelectionLine: {
+        strokeWidth: .3
+    } as React.CSSProperties,
+
+    lineChartTooltip: {
+        display: 'inline-block',
+        position: 'absolute',
+        direction: 'rtl',
+        background: 'white',
+        padding: 5,
+        border: 'solid 1px #dfe3e6'
+    } as React.CSSProperties
 }

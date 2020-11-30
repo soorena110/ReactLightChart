@@ -1,6 +1,6 @@
 import * as React from "react";
 import {useChartContext} from "../context";
-import './style.css';
+
 
 export default function AxisNumbers() {
     return <>
@@ -12,7 +12,7 @@ export default function AxisNumbers() {
 function renderIndexesNumbers() {
     const {props, offsets} = useChartContext();
 
-    const verticalShownValuesCount = props.axis?.indexes?.shownCount;
+    const verticalShownValuesCount = ((props.axis || {}).indexes || {}).shownCount;
     if (!verticalShownValuesCount)
         return null;
 
@@ -30,7 +30,7 @@ function renderIndexesNumbers() {
 function renderValuesNumbers() {
     const {props, offsets, dataMapper} = useChartContext();
 
-    const horizontalShownValuesCount = props.axis?.values?.shownCount;
+    const horizontalShownValuesCount = ((props.axis || {}).values || {}).shownCount;
     if (!horizontalShownValuesCount)
         return null;
 
@@ -50,17 +50,17 @@ function createVerticalLine(valueStops: any[], lineXDistance: number) {
 
     return valueStops.map((value, lineIndex) =>
         <span key={"ver_" + lineIndex}
-              className="line-chart-axis-number"
               style={{
+                  ...s.lineChartAxisNumber,
                   top: `calc(${offsets.height}% - 2em)`,
                   left: lineIndex != valueStops.length - 1 ?
                       offsets.left + lineXDistance * lineIndex + '%' :
                       undefined,
                   right: lineIndex == valueStops.length - 1 ? 0 : undefined,
                   transform: (lineIndex != valueStops.length - 1 && lineIndex != 0 ? 'translateX(-50%)' : '') +
-                  props.axis?.indexes?.rotation ? ` rotate(${props.axis?.indexes?.rotation}deg)` : ''
+                  ((props.axis || {}).indexes || {}).rotation ? ` rotate(${((props.axis || {}).indexes || {}).rotation}deg)` : ''
               }}>
-            {props.axis?.indexes?.renderLabels ? props.axis?.indexes?.renderLabels(value) : value}
+            {((props.axis || {}).indexes || {}).renderLabels ? ((props.axis || {}).indexes || {}).renderLabels(value) : value}
         </span>
     );
 }
@@ -70,15 +70,23 @@ function createHorizontalLine(valueStops: any[], lineYDistance: number) {
 
     return valueStops.map((value, lineIndex) =>
         <span key={"hor_" + lineIndex}
-              className={"line-chart-axis-number"}
               style={{
+                  ...s.lineChartAxisNumber,
                   top: `calc(${offsets.top + lineYDistance * lineIndex}% - ${
                       lineIndex == 0 ? 5 :
                           lineIndex == valueStops.length - 1 ? 17 : 10}px)`,
                   left: 0,
-                  transform: props.axis?.values?.rotation ? ` rotate(${props.axis?.indexes?.rotation}deg)` : ''
+                  transform: ((props.axis || {}).values || {}).rotation ? ` rotate(${((props.axis || {}).indexes || {}).rotation}deg)` : ''
               }}>
-            {props.axis?.values?.renderLabels ? props.axis?.values?.renderLabels(value) : value}
+            {((props.axis || {}).values || {}).renderLabels ? ((props.axis || {}).values || {}).renderLabels(value) : value}
         </span>
     );
+}
+
+const s = {
+    lineChartAxisNumber: {
+        color: '#949ba2',
+        fontSize: 11,
+        position: 'absolute'
+    } as React.CSSProperties
 }

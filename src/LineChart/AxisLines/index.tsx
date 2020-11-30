@@ -1,5 +1,4 @@
 import * as React from "react";
-import './style.css';
 import {useChartContext} from "../context";
 
 
@@ -14,9 +13,9 @@ function renderVerticalDivided() {
     const {props, offsets} = useChartContext();
 
     const infos = {
-        dontShowLines: props.axis?.values?.dontShowLines,
-        verticalLineCount: props.axis?.values?.shownCount,
-        lineProps: props.axis?.values?.lineProps
+        dontShowLines: ((props.axis || {}).values || {}).dontShowLines,
+        verticalLineCount: ((props.axis || {}).values || {}).shownCount,
+        lineProps: ((props.axis || {}).values || {}).lineProps
     }
 
     if (infos.dontShowLines || !infos.verticalLineCount)
@@ -31,7 +30,7 @@ function renderVerticalDivided() {
         return <line {...infos.lineProps}
                      x1={x} y1={y} x2={offsets.width} y2={y}
                      key={'y_' + lineIndex}
-                     className={`line-chart-axis-line ${infos.lineProps?.className || ''}`}/>
+                     style={{...s.lineChartAxisLine, ...infos.lineProps.style}}/>
     })
 }
 
@@ -39,9 +38,9 @@ function renderHorizontalDivided() {
     const {props, offsets} = useChartContext();
 
     const infos = {
-        dontShowLines: props.axis?.indexes?.dontShowLines,
-        horizontalLineCount: props.axis?.indexes?.shownCount,
-        lineProps: props.axis?.indexes?.lineProps
+        dontShowLines: ((props.axis || {}).indexes || {}).dontShowLines,
+        horizontalLineCount: ((props.axis || {}).indexes || {}).shownCount,
+        lineProps: ((props.axis || {}).indexes || {}).lineProps
     };
 
     if (infos.dontShowLines || !infos.horizontalLineCount)
@@ -51,9 +50,16 @@ function renderHorizontalDivided() {
 
     return new Array(infos.horizontalLineCount + 1).fill(1).map((_, lineIndex) => {
         const x = offsets.left + lineXDistance * lineIndex;
-        return <line {...infos?.lineProps}
+        return <line {...infos.lineProps}
                      x1={x} y1={offsets.top} x2={x} y2={offsets.innerHeight + offsets.top}
                      key={'x_' + lineIndex}
-                     className={`line-chart-axis-line ${infos.lineProps?.className || ''}`}/>
+                     style={{...s.lineChartAxisLine, ...infos.lineProps.style}}/>
     })
 }
+
+const s = {
+    lineChartAxisLine: {
+        stroke: 'rgba(0, 0, 0, 0.2)',
+        strokeWidth: '.1px'
+    }
+};

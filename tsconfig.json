@@ -1,20 +1,43 @@
 {
-  "compileOnSave": true,
   "compilerOptions": {
-    "target": "es5",
+    "baseUrl": "src",
+    "paths": {
+      "*": [
+        "types/*"
+      ]
+    },
+    "target": "esnext",
+    "moduleResolution": "node",
     "module": "commonjs",
-    "lib": [
-      "es2017",
-      "es7",
-      "es6",
-      "dom"
-    ],
     "jsx": "react",
+    "lib": [
+      "es2016",
+      "dom",
+      "es5"
+    ],
+    "declaration": true,
+    "sourceMap": true,
     "outDir": "./dist",
-    "strict": true,
-    "esModuleInterop": true
+    "removeComments": true,
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "dist",
+    "__tests__"
+  ],
+  "include": [
+    "./src/**/*.tsx",
+    "./src/**/*.ts"
   ]
 }

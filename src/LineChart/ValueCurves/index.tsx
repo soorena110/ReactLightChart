@@ -1,5 +1,4 @@
 import * as React from "react";
-import './style.css';
 import {ChartContextInfo, useChartContext} from "../context";
 import {LineChartGradientColor} from "../models";
 
@@ -9,7 +8,7 @@ export default function ValueCurves() {
     const {props, offsets} = context;
 
     return <>
-        {props.valuesList.map((lineValues, lineIndex) => {
+        {props.valuesList.map((_, lineIndex) => {
             const polyLine = getPolylinePoints(lineIndex, context);
             const {stroke, area} = props.labels[lineIndex];
 
@@ -19,7 +18,7 @@ export default function ValueCurves() {
             return <React.Fragment key={lineIndex}>
                 {renderFilledArea(lineIndex, `${beginPoint} ${polyLine} ${endPoint}`, area)}
                 {stroke && <polyline points={polyLine}
-                                     className="line-chart-data-polyline"
+                                     style={s.lineChartDataPolyline}
                                      stroke={stroke}/>}
             </React.Fragment>
         })}
@@ -61,7 +60,7 @@ function renderFilledArea(lineIndex: number, linePointsAsPolylineInput: string, 
 
     if (typeof areaColor == 'string')
         return <polyline points={linePointsAsPolylineInput}
-                         className="line-chart-data-polygon"
+                         style={s.lineChartDataPolygon}
                          fill={areaColor}/>;
 
 
@@ -76,7 +75,7 @@ function renderFilledArea(lineIndex: number, linePointsAsPolylineInput: string, 
             </linearGradient>
         </defs>
         <polyline points={linePointsAsPolylineInput}
-                  className="line-chart-data-polygon"
+                  style={s.lineChartDataPolygon}
                   fill={`url(#grad${lineIndex})`}/>
     </>
 }
@@ -90,4 +89,18 @@ function computeRotationOfGradient(rotation: number = 0) {
         'x2': Math.round(50 + Math.sin(anglePI + Math.PI) * 50) + '%',
         'y2': Math.round(50 + Math.cos(anglePI + Math.PI) * 50) + '%',
     }
+}
+
+const s = {
+    lineChartDataPolygon: {
+        stroke: 'transparent',
+        strokeWidth: 0,
+    }  as React.CSSProperties,
+
+    lineChartDataPolyline: {
+        fill: 'transparent',
+        strokeLinecap: 'round',
+        strokeWidth: .3,
+        strokeOpacity: .8
+    } as React.CSSProperties
 }

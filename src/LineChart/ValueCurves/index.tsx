@@ -81,13 +81,13 @@ function renderFilledArea(lineIndex: number, linePointsAsPolylineInput: string, 
 }
 
 
-function computeRotationOfGradient(rotation: number = 0) {
+function computeRotationOfGradient(rotation = 0) {
     const anglePI = rotation * (Math.PI / 180);
     return {
-        'x1': Math.round(50 + Math.sin(anglePI) * 50) + '%',
-        'y1': Math.round(50 + Math.cos(anglePI) * 50) + '%',
-        'x2': Math.round(50 + Math.sin(anglePI + Math.PI) * 50) + '%',
-        'y2': Math.round(50 + Math.cos(anglePI + Math.PI) * 50) + '%',
+        x1: Math.round(50 + Math.sin(anglePI) * 50) + '%',
+        y1: Math.round(50 + Math.cos(anglePI) * 50) + '%',
+        x2: Math.round(50 + Math.sin(anglePI + Math.PI) * 50) + '%',
+        y2: Math.round(50 + Math.cos(anglePI + Math.PI) * 50) + '%',
     }
 }
 
@@ -95,7 +95,7 @@ const s = {
     lineChartDataPolygon: {
         stroke: 'transparent',
         strokeWidth: 0,
-    }  as React.CSSProperties,
+    } as React.CSSProperties,
 
     lineChartDataPolyline: {
         fill: 'transparent',

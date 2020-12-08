@@ -1,3 +1,4 @@
+// @ts-ignore
 import * as React from "react";
 import {useChartContext} from "../context";
 
@@ -15,7 +16,7 @@ function renderVerticalDivided() {
     const infos = {
         dontShowLines: ((props.axis || {}).values || {}).dontShowLines,
         verticalLineCount: ((props.axis || {}).values || {}).shownCount,
-        lineProps: ((props.axis || {}).values || {}).lineProps
+        lineProps: ((props.axis || {}).values || {}).lineProps || {}
     }
 
     if (infos.dontShowLines || !infos.verticalLineCount)
@@ -40,7 +41,7 @@ function renderHorizontalDivided() {
     const infos = {
         dontShowLines: ((props.axis || {}).indexes || {}).dontShowLines,
         horizontalLineCount: ((props.axis || {}).indexes || {}).shownCount,
-        lineProps: ((props.axis || {}).indexes || {}).lineProps
+        lineProps: ((props.axis || {}).indexes || {}).lineProps || {}
     };
 
     if (infos.dontShowLines || !infos.horizontalLineCount)

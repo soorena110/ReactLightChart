@@ -51,7 +51,7 @@ function renderTooltip(mouseXByPercent?: number) {
     if (mouseXByPercent == undefined)
         return null;
 
-    const currentIndex = Math.round(mouseXByPercent * props.indexes.length);
+    const currentIndex = Math.round(mouseXByPercent * (props.indexes.length - 1));
     const xValueInThisIndex = props.indexes[currentIndex];
     const yValuesInThisIndex = props.valuesList
         .map((ys, ix) => ({index: ix, value: ys[xValueInThisIndex]}))
@@ -99,7 +99,7 @@ function renderSelectorLine(mouseXByPercent?: number) {
     if (mouseXByPercent == undefined)
         return null;
 
-    const currentIndex = Math.round(mouseXByPercent * props.indexes.length);
+    const currentIndex = Math.round(mouseXByPercent * (props.indexes.length - 1));
     const xValueInThisIndex = props.indexes[currentIndex];
     const yValuesInThisIndex = props.valuesList
         .map((ys, ix) => ({index: ix, value: ys[xValueInThisIndex]}))

@@ -2,18 +2,21 @@ import * as React from 'react';
 import {useState} from 'react';
 import {render} from "react-dom";
 import LineChart from "../LineChart";
-import {data3} from "./lineChartProps3";
 import {data1} from "./lineChartProps1";
 import {data2} from "./lineChartProps2";
+import {data3} from "./lineChartProps3";
+import {data4} from "./lineChartProps4";
+
 
 const lineChartExamples = [
     {data: data1, name: 'Horizonal'},
     {data: data2, name: 'Just a line'},
     {data: data3, name: 'Linear Gradient'},
+    {data: data4, name: 'Linear Gradient 2'},
 ];
 
 function DemoApplication() {
-    const [selectedChart, setSelectedChart] = useState(0)
+    const [selectedChart, setSelectedChart] = useState(3)
     const selectedChartProps = lineChartExamples[selectedChart].data;
 
 
@@ -35,5 +38,6 @@ render(
     document.getElementById("root")
 );
 
-declare const module: any;
+
+// @ts-ignore
 module.hot.accept();

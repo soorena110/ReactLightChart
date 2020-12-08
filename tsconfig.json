@@ -1,19 +1,12 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
-    "paths": {
-      "*": [
-        "types/*"
-      ]
-    },
     "target": "esnext",
-    "moduleResolution": "node",
-    "module": "commonjs",
-    "jsx": "react",
+    "module": "esnext",
     "lib": [
-      "es2016",
       "dom",
-      "es5"
+      "dom.iterable",
+      "esnext"
     ],
     "declaration": true,
     "sourceMap": true,
@@ -29,7 +22,16 @@
     "allowSyntheticDefaultImports": true,
     "typeRoots": [
       "node_modules/@types"
-    ]
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
   },
   "exclude": [
     "node_modules",

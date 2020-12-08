@@ -1,7 +1,7 @@
 import {LineChartProps} from "..";
 
 const indexes = new Array(300).fill(1).map((_, ix) => ix);
-const valuesList1 = {} as any;
+const valuesList1 = {} as LineChartProps["valuesList"][0];
 let x = 100;
 indexes.forEach((_, ix) =>
     valuesList1[ix] = x += Math.random() * 10 - 5)

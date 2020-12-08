@@ -22,6 +22,7 @@ export default function LineChart(props: LineChartProps) {
     const offsets = useMemo(() => getChartOffset(props), [props])
 
     const Provider = contextObject.Provider
+
     return <Provider value={{dataMapper, props, offsets}}>
         <div style={style} className={props.className}>
             <svg width="100%" height="100%" preserveAspectRatio="none"
@@ -55,10 +56,3 @@ export function getChartOffset(chartProps: LineChartProps): ChartOffsetsInfo {
         ...chartProps.overrideSizes
     }
 }
-
-
-LineChart.defaultProps = {
-    axis: {
-        indexes: {shownCount: 4}, values: {shownCount: 3}
-    }
-} as Partial<LineChartProps>

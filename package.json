@@ -1,8 +1,9 @@
 {
   "name": "react-light-chart",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "A simple and light library to draw charts.",
   "scripts": {
+    "start": "react-app-rewired start",
     "ts-build": "rimraf ./dist/** && tsc",
     "babel-build": "rimraf ./dist/** && babel ./src --out-dir dist --extensions '.ts,.tsx'",
     "travis-deploy-once": "travis-deploy-once",
@@ -13,12 +14,12 @@
   },
   "repository": {
     "type": "git",
+    "start": "react-scripts start",
     "url": "https://github.com/soorena110/ReactLightChart"
   },
   "bugs": {
     "url": "https://github.com/soorena110/ReactLightChart/issues"
   },
-  "homepage": "https://github.com/soorena110/ReactLightChart",
   "files": [
     "dist"
   ],
@@ -37,10 +38,6 @@
   ],
   "author": "MohammadReza Azarang.",
   "license": "ISC",
-  "dependencies": {
-    "react": "^16.8.3",
-    "react-dom": "^16.8.3"
-  },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.3.4",
@@ -49,16 +46,18 @@
     "@babel/plugin-transform-typescript": "^7.3.2",
     "@babel/preset-env": "^7.3.4",
     "@babel/preset-typescript": "^7.3.3",
-    "@types/jest": "^24.0.9",
     "@types/react": "^16.8.5",
     "@types/react-dom": "^16.8.2",
-    "enzyme": "^3.9.0",
-    "enzyme-adapter-react-16": "^1.10.0",
-    "jest": "^24.1.0",
+    "@typescript-eslint/eslint-plugin": "^4.6.1",
+    "@typescript-eslint/parser": "^4.6.1",
+    "eslint": "^7.13.0",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3",
     "react-test-renderer": "^16.8.3",
     "rimraf": "^3.0.2",
     "semantic-release": "^15.13.3",
-    "ts-jest": "^24.0.0",
     "tslint": "^5.13.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-react": "^3.6.0",
@@ -68,5 +67,21 @@
     "react": "*",
     "react-dom": "*",
     "react-native": "*"
+  },
+  "dependencies": {
+    "react-app-rewired": "^2.1.7",
+    "react-scripts": "^4.0.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

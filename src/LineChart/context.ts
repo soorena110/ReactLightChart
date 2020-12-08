@@ -20,7 +20,8 @@ export interface ChartOffsetsInfo {
     innerWidth: number;
 }
 
-export const contextObject = React.createContext<ChartContextInfo>({} as any);
+// @ts-ignore
+export const contextObject = React.createContext<ChartContextInfo>({});
 
 export function useChartContext() {
     return useContext<ChartContextInfo>(contextObject);

@@ -10,7 +10,7 @@ import AxisNumbers from "./AxisNumbers";
 
 
 export default function LineChart(props: LineChartProps) {
-    const dataMapper = useMemo(() => new PointMapper(props.indexes, props.valuesList), [props.indexes, props.valuesList])
+    const dataMapper = useMemo(() => new PointMapper(props), [props.indexes, props.valuesList])
 
     const style: React.CSSProperties = useMemo(() => ({
         height: '100%',

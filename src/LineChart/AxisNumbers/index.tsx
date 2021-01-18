@@ -61,8 +61,9 @@ function createVerticalLine(valueStops: (string | number)[], lineXDistance: numb
                          left: lineIndex != valueStops.length - 1 ?
                              offsets.left + lineXDistance * lineIndex + '%' :
                              undefined,
-                         transform: 'translateX(-50%) ' +
-                             (indexes.rotation ? ` rotate(${((props.axis || {}).indexes || {}).rotation}deg)` : '')
+                         right: lineIndex == valueStops.length - 1 ? 0 : undefined,
+                         transform: (lineIndex == valueStops.length - 1 ? 'translateX(50%)' : 'translateX(-50%)') +
+                             (indexes.rotation ? ` rotate(${indexes.rotation}deg)` : '')
                      }}>
             {indexes.renderLabels ? indexes.renderLabels(value) : value}
         </span>

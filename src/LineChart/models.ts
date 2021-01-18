@@ -22,6 +22,8 @@ export interface LineChartProps {
     }[];
     indexes: IndexType[];
     valuesList: PointListType[];
+    minimumValue?:number;
+    maximumValue?:number;
 
     overrideSizes?: {
         left?: number;
@@ -39,7 +41,7 @@ export interface LineChartProps {
             lineProps?: SVGProps<SVGLineElement>;
             dontShowLines?: boolean;
             rotation?: number;
-            renderLabels?: (value: string | number) => React.ReactNode;
+            renderLabels?: (value: number) => React.ReactNode;
         },
         indexes?: {
             shownCount?: number;

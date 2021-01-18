@@ -6,6 +6,7 @@ import {data1} from "./lineChartProps1";
 import {data2} from "./lineChartProps2";
 import {data3} from "./lineChartProps3";
 import {data4} from "./lineChartProps4";
+import {data5} from "./lineChartProps5";
 
 
 const lineChartExamples = [
@@ -13,10 +14,11 @@ const lineChartExamples = [
     {data: data2, name: 'Just a line'},
     {data: data3, name: 'Linear Gradient'},
     {data: data4, name: 'Linear Gradient 2'},
+    {data: data5, name: 'Linear Gradient 3'},
 ];
 
 function DemoApplication() {
-    const [selectedChart, setSelectedChart] = useState(3)
+    const [selectedChart, setSelectedChart] = useState(4)
     const selectedChartProps = lineChartExamples[selectedChart].data;
 
 

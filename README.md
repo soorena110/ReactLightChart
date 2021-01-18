@@ -10,14 +10,18 @@
 To install, use below code
 
 ```node
-npm install react-light-chart
+npm
+install
+react - light - chart
 ```
+
 Or
+
 ```node
-yarn add react-light-chart
+yarn
+add
+react - light - chart
 ```
-
-
 
 ## Images
 
@@ -28,11 +32,10 @@ You can clone code and run `npm start` to see below examples in `src/_dev` folde
 <img alt="exmaple 3" src="./readme/3.png"/>
 <img alt="exmaple 4" src="./readme/4.png"/>
 
-
 ## Example
 
 ```js
-import { LineChart } from 'react-light-chart';
+import {LineChart} from 'react-light-chart';
 
 const data4 = {
     "labels": [{
@@ -44,13 +47,13 @@ const data4 = {
             grads: [{color: "rgba(23, 135, 221, .4)", stop: 0}, {color: "rgba(23, 135, 221, 0)", stop: 1}]
         }
     }],
-    axis:{
-      indexes:{
-          shownCount:8,
-          rotation: -90,
-      },
-        values:{
-          shownCount:3
+    axis: {
+        indexes: {
+            shownCount: 8,
+            rotation: -90,
+        },
+        values: {
+            shownCount: 3
         }
     },
     overrideSizes: {
@@ -87,13 +90,12 @@ const data4 = {
 
 ```
 
-
-
-
 ## Parameters
 
 ```ts
-labels: {
+
+export interface LineChartProps {
+    labels: {
         name: string;
         stroke?: string;
         area?: LineChartGradientColor;
@@ -101,6 +103,8 @@ labels: {
     }[];
     indexes: IndexType[];
     valuesList: PointListType[];
+    minimumValue?: number;
+    maximumValue?: number;
 
     overrideSizes?: {
         left?: number;
@@ -133,4 +137,5 @@ labels: {
 
     style?: React.CSSProperties;
     className?: string;
+}
 ```

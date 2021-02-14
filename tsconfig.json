@@ -14,7 +14,6 @@
     "removeComments": true,
     "noImplicitAny": false,
     "noImplicitThis": true,
-    "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
@@ -31,8 +30,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
-    "noEmit": true
+    "jsx": "react-jsx"
   },
   "exclude": [
     "node_modules",

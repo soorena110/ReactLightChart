@@ -1,6 +1,11 @@
 import * as React from "react";
 import {SVGProps} from "react";
 
+export type ValuesInfo = {
+    minimumValue: number;
+    maximumValue: number;
+}
+
 export type LineChartGradientColor = string | {
     rotation?: number;
     grads: {
@@ -9,21 +14,46 @@ export type LineChartGradientColor = string | {
     }[]
 };
 
+type AxisInfo = {
+    linesCount?: number | null;
+    linesProps?: SVGProps<SVGLineElement>;
+    rotation?: number;
+}
 
-export type IndexType = number | string;
-export type PointListType = { [ix: string]: number };
+export type IndexesAxisInfo = AxisInfo & {
+    renderLabels?: (value: string | number) => React.ReactNode;
+}
 
-export interface LineChartProps {
+export type ValuesAxisInfo = IndexesAxisInfo & {
+    inside?: boolean;
+    minimumValue?: number;
+    maximumValue?: number;
+    renderLabels?: (value: number) => React.ReactNode;
+}
+
+export type DataType = object | number | undefined;
+
+type LineChartPropsDataSelector<TData extends DataType> =
+    TData extends object ? {
+        valueSelector: keyof TData | keyof TData[] | ((d: TData) => number | undefined | (number | undefined)[]);
+        indexSelector?: keyof TData | ((d: TData) => string | number);
+    } : {
+        valueSelector?: never;
+        indexSelector?: never;
+    }
+
+export type LineChartProps<TData extends DataType> = LineChartPropsDataSelector<TData> & {
+    data: TData[];
+
     labels: {
-        name: string;
+        title: string;
         stroke?: string;
         area?: LineChartGradientColor;
         labelColor?: string;
     }[];
-    indexes: IndexType[];
-    valuesList: PointListType[];
-    minimumValue?:number;
-    maximumValue?:number;
+
+    indexAxis: IndexesAxisInfo | ((e: ValuesInfo) => IndexesAxisInfo);
+    valueAxis: ValuesAxisInfo | ((e: ValuesInfo) => ValuesAxisInfo);
 
     overrideSizes?: {
         left?: number;
@@ -34,25 +64,34 @@ export interface LineChartProps {
         height?: number;
     }
 
-    axis?: {
-        values?: {
-            shownCount?: number;
-            inside?: boolean;
-            lineProps?: SVGProps<SVGLineElement>;
-            dontShowLines?: boolean;
-            rotation?: number;
-            renderLabels?: (value: number) => React.ReactNode;
-        },
-        indexes?: {
-            shownCount?: number;
-            lineProps?: SVGProps<SVGLineElement>;
-            dontShowLines?: boolean;
-            rotation?: number;
-            renderLabels?: (value: string | number) => React.ReactNode;
+    renderTooltip?: null | ((
+        params: {
+            data: TData;
+            prevDefinedData:TData;
+            nextDefinedData:TData;
+            index: string | number;
+            values: (number | undefined)[];
+            arrayIndex: number;
+            defaultCssProps: React.CSSProperties;
+            pointPosition: { position: 'absolute', left: string, top: string },
+            props: LineChartProps<TData>
         }
-    };
+    ) => React.ReactNode);
 
-    renderTooltip?: (data: { index: IndexType, values: number[], arrayIndex: number }, props: LineChartProps) => React.ReactNode;
+    renderSeparatedTooltip?: (
+        params: {
+            data: TData;
+            prevDefinedData:TData;
+            nextDefinedData:TData;
+            value: number | undefined;
+            valueIndex: number;
+            index: string | number;
+            arrayIndex: number;
+            values: (number | undefined)[];
+            pointPosition: { position: 'absolute', left: string, top: string },
+            props: LineChartProps<TData>
+        }
+    ) => React.ReactNode;
 
     style?: React.CSSProperties;
     className?: string;

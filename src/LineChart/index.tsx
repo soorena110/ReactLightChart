@@ -1,16 +1,14 @@
 import * as React from 'react';
 import {useMemo} from 'react';
-import {default as PointMapper} from "./PointMapper/index";
-import {LineChartProps} from "./models";
-import {ChartOffsetsInfo, contextObject} from "./context";
+import {DataType, LineChartProps} from "./models";
+import {ChartOffsetsInfo, ChartProvider} from "./context";
 import ValueCurves from "./ValueCurves";
 import AxisLines from "./AxisLines";
 import HoverLayer from "./HoverLayer";
 import AxisNumbers from "./AxisNumbers";
 
 
-export default function LineChart(props: LineChartProps) {
-    const dataMapper = useMemo(() => new PointMapper(props), [props.indexes, props.valuesList])
+export default function LineChart<TData extends DataType>(props: LineChartProps<TData>) {
 
     const style: React.CSSProperties = useMemo(() => ({
         height: '100%',
@@ -19,11 +17,7 @@ export default function LineChart(props: LineChartProps) {
         ...props.style
     }), [props.style]);
 
-    const offsets = useMemo(() => getChartOffset(props), [props])
-
-    const Provider = contextObject.Provider
-
-    return <Provider value={{dataMapper, props, offsets}}>
+    return <ChartProvider chartProps={props}>
         <div style={style} className={props.className}>
             <svg width="100%" height="100%" preserveAspectRatio="none"
                  viewBox={`0 0 100 100`}
@@ -34,11 +28,11 @@ export default function LineChart(props: LineChartProps) {
             <HoverLayer/>
             <AxisNumbers/>
         </div>
-    </Provider>
+    </ChartProvider>
 }
 
 
-export function getChartOffset(chartProps: LineChartProps): ChartOffsetsInfo {
+export function getChartOffset(overrideSizes: LineChartProps<any>["overrideSizes"]): ChartOffsetsInfo {
     return {
         left: 5,
         bottom: 8,
@@ -53,6 +47,22 @@ export function getChartOffset(chartProps: LineChartProps): ChartOffsetsInfo {
         get innerWidth() {
             return this.width - this.right - this.left
         },
-        ...chartProps.overrideSizes
+        ...overrideSizes
     }
 }
+
+LineChart.defaultProps = {
+    renderTooltip({values, index, props, defaultCssProps}) {
+        return <span style={defaultCssProps}>
+            {values.map((value, ix) => (
+                <div key={ix}>
+                    <b style={{color: props.labels[ix].labelColor}}>{` ${props.labels[ix].title}: `}</b>
+                    {value}
+                </div>
+            ))}
+            <div style={{textAlign: 'center'}}>
+                {index}
+            </div>
+        </span>
+    }
+} as Partial<LineChartProps<any>>

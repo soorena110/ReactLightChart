@@ -1,4 +1,3 @@
-// @ts-ignore
 import * as React from "react";
 import {useChartContext} from "../context";
 
@@ -11,50 +10,32 @@ export default function AxisLines() {
 }
 
 function renderVerticalDivided() {
-    const {props, offsets} = useChartContext();
+    const {offsets, dataMapper: {axisInfo: {valueAxis}, valuesAxisLinesInfo}} = useChartContext();
 
-    const infos = {
-        dontShowLines: ((props.axis || {}).values || {}).dontShowLines,
-        verticalLineCount: ((props.axis || {}).values || {}).shownCount,
-        lineProps: ((props.axis || {}).values || {}).lineProps || {}
-    }
+    return valuesAxisLinesInfo.map(r => {
+            const x1 = offsets.left - 1;
+            const x2 = offsets.width;
+            const y = offsets.top + offsets.innerHeight * (1 - r.percent);
 
-    if (infos.dontShowLines || !infos.verticalLineCount)
-        return null;
-
-    const lineYDistance = offsets.innerHeight / infos.verticalLineCount;
-
-    return new Array(infos.verticalLineCount + 1).fill(1).map((_, lineIndex) => {
-        const x = offsets.left - 1;
-        const y = offsets.top + lineYDistance * lineIndex;
-
-        return <line {...infos.lineProps}
-                     x1={x} y1={y} x2={offsets.width} y2={y}
-                     key={'y_' + lineIndex}
-                     style={{...s.lineChartAxisLine, ...infos.lineProps.style}}/>
-    })
+            return <line key={y}
+                         {...valueAxis.linesProps}
+                         x1={x1} y1={y} x2={x2} y2={y}
+                         style={{...s.lineChartAxisLine, ...valueAxis.linesProps?.style}}>{r.percent}</line>
+        }
+    )
 }
 
 function renderHorizontalDivided() {
-    const {props, offsets} = useChartContext();
+    const {offsets, dataMapper: {axisInfo: {indexAxis}, indexesAxisLinesInfo}} = useChartContext();
 
-    const infos = {
-        dontShowLines: ((props.axis || {}).indexes || {}).dontShowLines,
-        horizontalLineCount: ((props.axis || {}).indexes || {}).shownCount,
-        lineProps: ((props.axis || {}).indexes || {}).lineProps || {}
-    };
-
-    if (infos.dontShowLines || !infos.horizontalLineCount)
-        return null;
-
-    const lineXDistance = offsets.innerWidth / infos.horizontalLineCount;
-
-    return new Array(infos.horizontalLineCount + 1).fill(1).map((_, lineIndex) => {
-        const x = offsets.left + lineXDistance * lineIndex;
-        return <line {...infos.lineProps}
-                     x1={x} y1={offsets.top} x2={x} y2={offsets.innerHeight + offsets.top}
-                     key={'x_' + lineIndex}
-                     style={{...s.lineChartAxisLine, ...infos.lineProps.style}}/>
+    return indexesAxisLinesInfo.map(r => {
+        const x = offsets.left + offsets.innerWidth * r.percent;
+        const y1 = offsets.top;
+        const y2 = offsets.innerHeight + offsets.top;
+        return <line key={x}
+                     {...indexAxis.linesProps}
+                     x1={x} y1={y1} x2={x} y2={y2}
+                     style={{...s.lineChartAxisLine, ...indexAxis.linesProps?.style}}/>
     })
 }
 

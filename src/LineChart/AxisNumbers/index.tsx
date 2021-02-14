@@ -9,85 +9,45 @@ export default function AxisNumbers() {
     </>
 }
 
-function renderIndexesNumbers() {
-    const {props, offsets} = useChartContext();
-
-    const verticalShownValuesCount = ((props.axis || {}).indexes || {}).shownCount;
-    if (!verticalShownValuesCount)
-        return null;
-
-    const lineXDistance = offsets.innerWidth / verticalShownValuesCount;
-
-    const shownIndexes: (number | string)[] = [];
-    for (let lineIndex = 0; lineIndex < verticalShownValuesCount; lineIndex++) {
-        const ix = Math.round(lineIndex * props.indexes.length / verticalShownValuesCount);
-        shownIndexes.push(props.indexes[ix]);
-    }
-    shownIndexes.push(props.indexes[props.indexes.length - 1]);
-
-    return createVerticalLine(shownIndexes, lineXDistance);
-}
-
-
 function renderValuesNumbers() {
-    const {props, offsets, dataMapper} = useChartContext();
+    const {offsets, dataMapper: {axisInfo: {valueAxis}, valuesAxisLinesInfo}} = useChartContext();
 
-    const horizontalShownValuesCount = ((props.axis || {}).values || {}).shownCount;
-    if (!horizontalShownValuesCount)
-        return null;
+    return valuesAxisLinesInfo.map((r, lineIndex) => {
+        const y = offsets.top + offsets.innerHeight * (1 - r.percent);
 
-    const lineYDistance = offsets.innerHeight / horizontalShownValuesCount;
-
-    const minAndMaxY = dataMapper.getMinAndMaxValue();
-
-    const shownValues: number[] = [];
-    for (let lineIndex = 0; lineIndex <= horizontalShownValuesCount; lineIndex++) {
-        const stopValue = minAndMaxY.max - lineIndex * (minAndMaxY.max - minAndMaxY.min) / horizontalShownValuesCount;
-        shownValues.push(stopValue);
-    }
-
-    return createHorizontalLine(shownValues, lineYDistance);
+        return <span key={"hor_" + lineIndex}
+                     style={{
+                         ...s.lineChartAxisNumber,
+                         top: `calc(${y}% - ${
+                             lineIndex == 0 ? 10 :
+                                 lineIndex == valuesAxisLinesInfo.length - 1 ? 0 : 5}px)`,
+                         left: 0,
+                         transform: valueAxis.rotation ? ` rotate(${valueAxis.rotation}deg)` : ''
+                     }}>
+            {valueAxis.renderLabels ? valueAxis.renderLabels(r.value) : r.value}
+        </span>
+    })
 }
 
-function createVerticalLine(valueStops: (string | number)[], lineXDistance: number) {
-    const {offsets, props} = useChartContext();
 
-    return valueStops.map((value, lineIndex) => {
-        const indexes = (props.axis || {}).indexes || {};
-        return <span key={"ver_" + lineIndex}
+function renderIndexesNumbers() {
+    const {offsets, dataMapper: {axisInfo: {indexAxis}, indexesAxisLinesInfo}} = useChartContext();
+
+    return indexesAxisLinesInfo.map((r, lineIndex) => {
+        const x = offsets.left + offsets.innerWidth * r.percent;
+
+        return <span key={"hor_" + lineIndex}
                      style={{
                          ...s.lineChartAxisNumber,
                          top: `calc(${offsets.height}% - 2em)`,
-                         left: lineIndex != valueStops.length - 1 ?
-                             offsets.left + lineXDistance * lineIndex + '%' :
-                             undefined,
-                         right: lineIndex == valueStops.length - 1 ? 0 : undefined,
-                         transform: (lineIndex == valueStops.length - 1 ? 'translateX(50%)' : 'translateX(-50%)') +
-                             (indexes.rotation ? ` rotate(${indexes.rotation}deg)` : '')
+                         left: lineIndex != indexesAxisLinesInfo.length - 1 ? x + '%' : undefined,
+                         right: lineIndex == indexesAxisLinesInfo.length - 1 ? 0 : undefined,
+                         transform: (lineIndex == indexesAxisLinesInfo.length - 1 ? 'translateX(50%)' : 'translateX(-50%)') +
+                             (indexAxis.rotation ? ` rotate(${indexAxis.rotation}deg)` : '')
                      }}>
-            {indexes.renderLabels ? indexes.renderLabels(value) : value}
+            {indexAxis.renderLabels ? indexAxis.renderLabels(r.value) : r.value}
         </span>
-    });
-}
-
-function createHorizontalLine(valueStops: (number)[], lineYDistance: number) {
-    const {offsets, props} = useChartContext();
-
-    return valueStops.map((value, lineIndex) => {
-            const valuesAxis = (props.axis || {}).values || {};
-            return <span key={"hor_" + lineIndex}
-                         style={{
-                             ...s.lineChartAxisNumber,
-                             top: `calc(${offsets.top + lineYDistance * lineIndex}% - ${
-                                 lineIndex == 0 ? 5 :
-                                     lineIndex == valueStops.length - 1 ? 17 : 10}px)`,
-                             left: 0,
-                             transform: valuesAxis.rotation ? ` rotate(${valuesAxis.rotation}deg)` : ''
-                         }}>
-            {valuesAxis.renderLabels ? valuesAxis.renderLabels(value) : value}
-        </span>
-        }
-    );
+    })
 }
 
 const s = {

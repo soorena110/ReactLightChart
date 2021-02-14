@@ -1,7 +1,10 @@
 import * as React from "react";
 import {useCallback, useState} from "react";
 import {ChartContextInfo, useChartContext} from "../context";
-import {LineChartProps} from "../models";
+import {
+    findNextIndexNotUndefinedValueInArray,
+    findPreviousIndexNotUndefinedValueInArray
+} from "../PointMapper/findNextAndPreviousValueNotUndefinedValueInArray";
 
 
 export default function HoverLayer() {
@@ -46,71 +49,78 @@ export default function HoverLayer() {
 
 function renderTooltip(mouseXByPercent?: number) {
     const context = useChartContext();
-    const {props} = context;
+    const {props, dataMapper: {valuesGroup, indexes}} = context;
 
     if (mouseXByPercent == undefined)
         return null;
 
-    const currentIndex = Math.round(mouseXByPercent * (props.indexes.length - 1));
-    const xValueInThisIndex = props.indexes[currentIndex];
-    const yValuesInThisIndex = props.valuesList
-        .map((ys, ix) => ({index: ix, value: ys[xValueInThisIndex]}))
-        .filter(y => y.value != undefined);
+    const currentIndex = Math.round(mouseXByPercent * (indexes.length - 1));
+    const xValueInThisIndex = indexes[currentIndex];
+    const values = valuesGroup[currentIndex];
 
     const fixOffset = 5;
-    let yValue = -9999999;
-    yValuesInThisIndex.forEach(yvi => yvi.value > yValue ? yValue = yvi.value : undefined);
-    const {x, y} = getPointPosition(currentIndex, yValue, context);
 
-    const values = yValuesInThisIndex.map(({value}) => value)
+    const prev = findPreviousIndexNotUndefinedValueInArray(props.data, currentIndex || 1)
+    const next = findNextIndexNotUndefinedValueInArray(props.data, Math.min(props.data.length - 2, currentIndex))
 
-    return <span style={{
-        ...s.lineChartTooltip,
-        top: y < 50 ? y + fixOffset + '%' : undefined,
-        bottom: y < 50 ? undefined : 100 - y + fixOffset + '%',
-        left: x < 50 ? x + fixOffset + '%' : undefined,
-        right: x < 50 ? undefined : 100 - x + fixOffset + '%'
-    }}>
-        {props.renderTooltip
-            ? props.renderTooltip({index: xValueInThisIndex, values, arrayIndex: currentIndex}, props)
-            : renderDefaultTooltip({index: xValueInThisIndex, values, arrayIndex: currentIndex}, props)}
-        </span>
-}
+    if (props.renderSeparatedTooltip)
+        return values.map(
+            (value, valueIndex) => {
+                const {x, y} = getPointPosition(currentIndex, values[valueIndex]!, context);
+                return props.renderSeparatedTooltip!({
+                    props, values, valueIndex, value,
+                    pointPosition: {left: x + '%', top: y + '%', position: 'absolute'},
+                    data: props.data[currentIndex],
+                    prevDefinedData:props.data[prev],
+                    nextDefinedData:props.data[next],
+                    arrayIndex: currentIndex,
+                    index: xValueInThisIndex,
+                });
+            }
+        );
 
-function renderDefaultTooltip(data: { index: number | string, values: number[], arrayIndex: number }, props: LineChartProps) {
-    return <>
-        {data.values.map((value, index) => (
-            <div key={index}>
-                <b style={{color: props.labels[index].labelColor}}>{` ${props.labels[index].name}: `}</b>
-                {value}
-            </div>
-        ))}
-        <div style={{textAlign: 'center'}}>
-            {data.index}
-        </div>
-    </>
+    if (props.renderTooltip) {
+        const {x, y} = getPointPosition(currentIndex, values[0]!, context);
+        return props.renderTooltip({
+            props,
+            pointPosition: {left: x + '%', top: y + '%', position: 'absolute'},
+            defaultCssProps: {
+                ...s.lineChartTooltip,
+                top: y < 50 ? y + fixOffset + '%' : undefined,
+                bottom: y < 50 ? undefined : 100 - y + fixOffset + '%',
+                left: x < 50 ? x + fixOffset + '%' : undefined,
+                right: x < 50 ? undefined : 100 - x + fixOffset + '%'
+            },
+            data: props.data[currentIndex],
+            prevDefinedData:props.data[prev],
+            nextDefinedData:props.data[next],
+            arrayIndex: currentIndex,
+            index: xValueInThisIndex,
+            values
+        })
+    }
+
+    return null;
 }
 
 
 function renderSelectorLine(mouseXByPercent?: number) {
     const context = useChartContext();
-    const {props, offsets} = context;
+    const {props, offsets, dataMapper: {indexes, valuesGroup}} = context;
 
     if (mouseXByPercent == undefined)
         return null;
 
-    const currentIndex = Math.round(mouseXByPercent * (props.indexes.length - 1));
-    const xValueInThisIndex = props.indexes[currentIndex];
-    const yValuesInThisIndex = props.valuesList
-        .map((ys, ix) => ({index: ix, value: ys[xValueInThisIndex]}))
-        .filter(y => y.value != undefined);
+    const currentIndex = Math.round(mouseXByPercent * (valuesGroup.length - 1));
+    const xValueInThisIndex = valuesGroup[currentIndex]
+        .filter(y => y != undefined);
 
-    return yValuesInThisIndex.map(y => {
-        const thePointPosition = getPointPosition(currentIndex, y.value, context);
+    return xValueInThisIndex.map((y, ix) => {
+        const thePointPosition = getPointPosition(currentIndex, y!, context);
 
-        const color = props.labels[y.index].labelColor;
+        const color = props.labels[ix].labelColor;
 
-        return <React.Fragment key={y.index}>
+        return <React.Fragment key={ix}>
             <circle cx={thePointPosition.x + '%'}
                     cy={thePointPosition.y + '%'}
                     r={3}
@@ -133,8 +143,8 @@ function renderSelectorLine(mouseXByPercent?: number) {
 }
 
 
-function getPointPosition(index: number, value: number, {offsets, dataMapper}: ChartContextInfo) {
-    const {x, y} = dataMapper.getPointPosition(index, value);
+function getPointPosition(index: number, values: number, {offsets, dataMapper}: ChartContextInfo) {
+    const {x, y} = dataMapper.getPointPosition(index, values);
     return {
         x: x * (offsets.innerWidth) + offsets.left,
         y: (1 - y) * (offsets.innerHeight) + offsets.top
@@ -157,6 +167,7 @@ const s = {
         direction: 'rtl',
         background: 'white',
         padding: 5,
-        border: 'solid 1px #dfe3e6'
+        border: 'solid 1px #dfe3e6',
+        zIndex: 9999
     } as React.CSSProperties
 }

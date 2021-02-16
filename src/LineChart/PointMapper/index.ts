@@ -1,9 +1,11 @@
-import {DataType, IndexesAxisInfo, LineChartProps, ValuesAxisInfo} from "../models";
+import {DataType, LineChartProps} from "../models";
 import getMinAndMaxFromData from "./getMinAndMaxFromData";
 import {
     findNextIndexNotUndefinedValueInArray,
     findPreviousIndexNotUndefinedValueInArray
 } from "./findNextAndPreviousValueNotUndefinedValueInArray";
+import {Label} from "../models/labels";
+import {IndexesAxisInfo, ValuesAxisInfo} from "../models/axis";
 
 
 export default class PointMapper<TData extends DataType> {
@@ -24,26 +26,28 @@ export default class PointMapper<TData extends DataType> {
     get valuesGroup(): (number | undefined)[][] {
         if (this._valuesGroupCache) return this._valuesGroupCache;
 
-        function selectValue(r: TData, ix: number) {
+        function selectValue(r: TData, ix: number, zeroAsUndefined = false) {
             switch (typeof r) {
                 case 'number':
                     return [r];
                 case "object":
-                    const ret = typeof valueSelector == 'function' ? valueSelector(r as object) : r[valueSelector as string];
+                    const ret = typeof valueSelector == 'function' ? valueSelector(r) : r[valueSelector as string];
                     return Array.isArray(ret) ? ret : [ret];
                 case "undefined":
+                    if (zeroAsUndefined) return 0;
+
                     const prev = findPreviousIndexNotUndefinedValueInArray(data, ix);
                     const next = findNextIndexNotUndefinedValueInArray(data, ix);
                     const prevFactor = ix - prev;
                     const nextFactor = next - ix;
-                    const prevValue = selectValue(data[prev], ix);
-                    const nextValue = selectValue(data[next], ix);
-                    return [(prevValue * nextFactor + nextValue * prevFactor) / (prevFactor + nextFactor)]
+                    const prevValue = selectValue(data[prev], ix, true);
+                    const nextValue = selectValue(data[next], ix, true);
+                    return [(prevValue * nextFactor + nextValue * prevFactor) / (prevFactor + nextFactor)];
             }
         }
 
         const {data, valueSelector} = this._props;
-        return this._valuesGroupCache = data.map(selectValue);
+        return this._valuesGroupCache = data.map((value, ix) => selectValue(value, ix));
     }
 
 
@@ -60,7 +64,7 @@ export default class PointMapper<TData extends DataType> {
                 case "object":
                     if (!indexSelector)
                         return ix;
-                    return typeof indexSelector == 'function' ? indexSelector(r as object) : r[indexSelector];
+                    return typeof indexSelector == 'function' ? indexSelector(r) : +(r as TData)[indexSelector];
                 case "undefined":
                     return findPreviousIndexNotUndefinedValueInArray(data, ix);
             }
@@ -140,4 +144,20 @@ export default class PointMapper<TData extends DataType> {
         return this._indexesAxisLinesInfoCache = ret;
     }
 
+    private _labelCache ?: Label[];
+
+    get labels(): Label[] {
+        if (this._labelCache) return this._labelCache;
+
+        const labels = this._props.labels!;
+        this._labelCache = new Proxy(labels, {
+            get(_: unknown, ix: number): any {
+                const newIx = ix % labels.length;
+                if (newIx != ix)
+                    return {...labels[newIx], title: 'value' + newIx};
+                return labels[ix];
+            }
+        }) as Label[];
+        return this._labelCache!;
+    }
 }

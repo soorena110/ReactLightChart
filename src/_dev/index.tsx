@@ -4,7 +4,7 @@ import {render} from "react-dom";
 import LineChart from "../LineChart";
 import {data1} from "./lineChartProps1";
 import {data2} from "./lineChartProps2";
-// import {data3} from "./lineChartProps3";
+import {data3} from "./lineChartProps3";
 // import {data4} from "./lineChartProps4";
 // import {data5} from "./lineChartProps5";
 
@@ -12,7 +12,7 @@ import {data2} from "./lineChartProps2";
 const lineChartExamples = [
     {data: data1, name: 'Horizonal'},
     {data: data2, name: 'Just a line'},
-    // {data: data3, name: 'Linear Gradient'},
+    {data: data3, name: 'Multiple lines'},
     // {data: data4, name: 'Linear Gradient 2'},
     // {data: data5, name: 'Linear Gradient 3'},
 ];
@@ -20,7 +20,6 @@ const lineChartExamples = [
 function DemoApplication() {
     const [selectedChart, setSelectedChart] = useState(0)
     const selectedChartProps = lineChartExamples[selectedChart].data as any;
-
 
     return <>
         <label>

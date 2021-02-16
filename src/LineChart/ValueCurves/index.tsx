@@ -1,16 +1,16 @@
 import * as React from "react";
 import {ChartContextInfo, useChartContext} from "../context";
-import {LineChartGradientColor} from "../models";
+import {LineChartAreaColor} from "../models/labels";
 
 
 export default function ValueCurves() {
     const context = useChartContext();
-    const {props, offsets, dataMapper} = context;
+    const {props, offsets, dataMapper:{valuesGroup, labels}} = context;
 
     return <>
-        {dataMapper.valuesGroup[0].map((_, lineNumber) => {
+        {valuesGroup[0].map((_, lineNumber) => {
             const polyLine = getPolylinePoints(lineNumber, context);
-            const {stroke, area} = props.labels[lineNumber];
+            const {stroke, area} = labels[lineNumber];
 
             const beginPoint = pointToString({x: offsets.left, y: offsets.innerHeight + offsets.top});
             const endPoint = pointToString({x: 100, y: offsets.innerHeight + offsets.top});
@@ -28,8 +28,8 @@ export default function ValueCurves() {
 function getPolylinePoints(lineNumber: number, context: ChartContextInfo) {
     const {dataMapper: {valuesGroup, indexes}} = context;
     const points = indexes.map((_, ix) => {
-        const value = valuesGroup[ix];
-        return getPointPosition(ix, typeof value == 'number' ? value : value[lineNumber], context);
+        const value = valuesGroup[ix][lineNumber];
+        return getPointPosition(ix, value, context);
     });
     return points.map(pointToString).join(' ');
 }
@@ -56,7 +56,7 @@ function getPointPosition(index: number, value: number | undefined, {dataMapper,
 }
 
 
-function renderFilledArea(lineNumber: number, linePointsAsPolylineInput: string, areaColor?: LineChartGradientColor) {
+function renderFilledArea(lineNumber: number, linePointsAsPolylineInput: string, areaColor?: LineChartAreaColor) {
     if (!areaColor)
         return null;
 

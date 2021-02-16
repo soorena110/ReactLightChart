@@ -49,7 +49,7 @@ export default function HoverLayer() {
 
 function renderTooltip(mouseXByPercent?: number) {
     const context = useChartContext();
-    const {props, dataMapper: {valuesGroup, indexes}} = context;
+    const {props, dataMapper: {valuesGroup, indexes, labels}} = context;
 
     if (mouseXByPercent == undefined)
         return null;
@@ -67,22 +67,24 @@ function renderTooltip(mouseXByPercent?: number) {
         return values.map(
             (value, valueIndex) => {
                 const {x, y} = getPointPosition(currentIndex, values[valueIndex]!, context);
-                return props.renderSeparatedTooltip!({
-                    props, values, valueIndex, value,
-                    pointPosition: {left: x + '%', top: y + '%', position: 'absolute'},
-                    data: props.data[currentIndex],
-                    prevDefinedData:props.data[prev],
-                    nextDefinedData:props.data[next],
-                    arrayIndex: currentIndex,
-                    index: xValueInThisIndex,
-                });
+                return <React.Fragment key={valueIndex}>
+                    {props.renderSeparatedTooltip!({
+                        props, values, lineIndex: valueIndex, value, labels,
+                        pointPosition: {left: x + '%', top: y + '%', position: 'absolute'},
+                        data: props.data[currentIndex],
+                        prevDefinedData: props.data[prev],
+                        nextDefinedData: props.data[next],
+                        arrayIndex: currentIndex,
+                        index: xValueInThisIndex,
+                    })}
+                </React.Fragment>
             }
         );
 
     if (props.renderTooltip) {
         const {x, y} = getPointPosition(currentIndex, values[0]!, context);
         return props.renderTooltip({
-            props,
+            props, labels, values,
             pointPosition: {left: x + '%', top: y + '%', position: 'absolute'},
             defaultCssProps: {
                 ...s.lineChartTooltip,
@@ -92,11 +94,10 @@ function renderTooltip(mouseXByPercent?: number) {
                 right: x < 50 ? undefined : 100 - x + fixOffset + '%'
             },
             data: props.data[currentIndex],
-            prevDefinedData:props.data[prev],
-            nextDefinedData:props.data[next],
+            prevDefinedData: props.data[prev],
+            nextDefinedData: props.data[next],
             arrayIndex: currentIndex,
             index: xValueInThisIndex,
-            values
         })
     }
 
@@ -106,19 +107,19 @@ function renderTooltip(mouseXByPercent?: number) {
 
 function renderSelectorLine(mouseXByPercent?: number) {
     const context = useChartContext();
-    const {props, offsets, dataMapper: {indexes, valuesGroup}} = context;
+    const {offsets, dataMapper: {valuesGroup, labels}} = context;
 
     if (mouseXByPercent == undefined)
         return null;
 
     const currentIndex = Math.round(mouseXByPercent * (valuesGroup.length - 1));
-    const xValueInThisIndex = valuesGroup[currentIndex]
-        .filter(y => y != undefined);
+    const xValueInThisIndex = valuesGroup[currentIndex];
 
     return xValueInThisIndex.map((y, ix) => {
-        const thePointPosition = getPointPosition(currentIndex, y!, context);
+        if (!y) return undefined;
+        const thePointPosition = getPointPosition(currentIndex, y, context);
 
-        const color = props.labels[ix].labelColor;
+        const color = labels[ix].labelColor;
 
         return <React.Fragment key={ix}>
             <circle cx={thePointPosition.x + '%'}

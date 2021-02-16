@@ -52,17 +52,24 @@ export function getChartOffset(overrideSizes: LineChartProps<any>["overrideSizes
 }
 
 LineChart.defaultProps = {
-    renderTooltip({values, index, props, defaultCssProps}) {
+    renderTooltip({values, index, labels, defaultCssProps}) {
         return <span style={defaultCssProps}>
-            {values.map((value, ix) => (
-                <div key={ix}>
-                    <b style={{color: props.labels[ix].labelColor}}>{` ${props.labels[ix].title}: `}</b>
-                    {value}
+            {values.map((value, ix) => {
+                const {title, labelColor} = labels[ix];
+                return <div key={ix}>
+                    {title && <b style={{color: labelColor}}>{` ${title}: `}</b>}
+                    <span style={{color: title ? undefined : labelColor}}>{value}</span>
                 </div>
-            ))}
+            })}
             <div style={{textAlign: 'center'}}>
                 {index}
             </div>
         </span>
-    }
+    },
+    labels: ['#2384d1', '#d04441', '#46d041', '#d0c941',
+        '#d07f41', '#7341d0', '#41d0b3', '#d041b1'].map((r, ix) => ({
+        labelColor: r,
+        stroke: r,
+        title: 'value' + ix
+    }))
 } as Partial<LineChartProps<any>>

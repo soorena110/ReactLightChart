@@ -2,8 +2,8 @@ import * as React from "react";
 import { useCallback, useState } from "react";
 import { ChartContextInfo, useChartContext } from "../context";
 import {
-    findNextIndexNotUndefinedValueInArray,
-    findPreviousIndexNotUndefinedValueInArray
+    findNextIndexNotUndefinedDataInArray,
+    findPreviousIndexNotUndefinedDataInArray
 } from "../PointMapper/findNextAndPreviousValueNotUndefinedValueInArray";
 
 
@@ -52,7 +52,7 @@ export default function HoverLayer() {
 
 function renderTooltip(mouseXByPercent?: number) {
     const context = useChartContext();
-    const {props, dataMapper: {valuesGroup, indexes, labels}} = context;
+    const {props, dataMapper: {valuesGroup, estimatedValuesGroup, indexes, labels}} = context;
 
     if (mouseXByPercent == undefined) {
         return null;
@@ -60,20 +60,22 @@ function renderTooltip(mouseXByPercent?: number) {
 
     const currentIndex = Math.round(mouseXByPercent * (indexes.length - 1));
     const xValueInThisIndex = indexes[currentIndex];
+    const estimatedValues = estimatedValuesGroup[currentIndex];
     const values = valuesGroup[currentIndex];
 
     const fixOffset = 5;
 
-    const prev = findPreviousIndexNotUndefinedValueInArray(props.data, currentIndex || 1);
-    const next = findNextIndexNotUndefinedValueInArray(props.data, Math.min(props.data.length - 2, currentIndex));
+    const prev = findPreviousIndexNotUndefinedDataInArray(props.data, currentIndex || 1);
+    const next = findNextIndexNotUndefinedDataInArray(props.data, Math.min(props.data.length - 2, currentIndex));
 
     if (props.renderSeparatedTooltip) {
-        return values.map(
-            (value, valueIndex) => {
-                const {x, y} = getPointPosition(currentIndex, values[valueIndex]!, context);
+        return estimatedValues.map(
+            (estimatedValue, valueIndex) => {
+                const {x, y} = getPointPosition(currentIndex, estimatedValues[valueIndex]!, context);
                 return <React.Fragment key={valueIndex}>
                     {props.renderSeparatedTooltip!({
-                        props, values, lineIndex: valueIndex, value, labels,
+                        props, values, lineIndex: valueIndex, labels, estimatedValue, estimatedValues,
+                        value: values[valueIndex],
                         pointPosition: {left: x + '%', top: y + '%', position: 'absolute', zIndex: 99},
                         data: props.data[currentIndex],
                         prevDefinedData: props.data[prev],
@@ -89,7 +91,7 @@ function renderTooltip(mouseXByPercent?: number) {
     if (props.renderTooltip) {
         const {x, y} = getPointPosition(currentIndex, values[0]!, context);
         return props.renderTooltip({
-            props, labels, values,
+            props, labels, values, estimatedValues,
             pointPosition: {left: x + '%', top: y + '%', position: 'absolute', zIndex: 99},
             defaultCssProps: {
                 ...s.lineChartTooltip,
@@ -112,14 +114,14 @@ function renderTooltip(mouseXByPercent?: number) {
 
 function renderSelectorLine(mouseXByPercent?: number) {
     const context = useChartContext();
-    const {offsets, dataMapper: {valuesGroup, labels}} = context;
+    const {offsets, dataMapper: {estimatedValuesGroup, labels}} = context;
 
     if (mouseXByPercent == undefined) {
         return null;
     }
 
-    const currentIndex = Math.round(mouseXByPercent * (valuesGroup.length - 1));
-    const xValueInThisIndex = valuesGroup[currentIndex];
+    const currentIndex = Math.round(mouseXByPercent * (estimatedValuesGroup.length - 1));
+    const xValueInThisIndex = estimatedValuesGroup[currentIndex];
 
     return xValueInThisIndex.map((y, ix) => {
         if (!y) return undefined;

@@ -18,7 +18,7 @@ const lineChartExamples = [
 ];
 
 function DemoApplication() {
-    const [selectedChart, setSelectedChart] = useState(0)
+    const [selectedChart, setSelectedChart] = useState(2)
     const selectedChartProps = lineChartExamples[selectedChart].data as any;
 
     return <>

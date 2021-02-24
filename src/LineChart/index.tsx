@@ -52,9 +52,9 @@ export function getChartOffset(overrideSizes: LineChartProps<any>["overrideSizes
 }
 
 LineChart.defaultProps = {
-    renderTooltip({values, index, labels, defaultCssProps}) {
+    renderTooltip({estimatedValues, index, labels, defaultCssProps}) {
         return <span style={defaultCssProps}>
-            {values.map((value, ix) => {
+            {estimatedValues.map((value, ix) => {
                 const {title, labelColor} = labels[ix];
                 return <div key={ix}>
                     {title && <b style={{color: labelColor}}>{` ${title}: `}</b>}

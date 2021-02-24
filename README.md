@@ -255,7 +255,8 @@ type PointParameters = {
     pointPosition: { position: 'absolute', left: string, top: string, zIndex:number }; // position of the point on chart. `top` and `left` are calculated by percent.
     props: LineChartProps;    // props passed to LineChart component.
     labels: Label[];          // labels passed to LineChart component, or default value of labels if no label passed to the component.
-
+    estimatedValue: number;// value of current line estimated on all curves
+  
     defaultCssProps: React.CSSProperties; // css properties of default tooltip.
 }
 ```
@@ -294,6 +295,8 @@ type SeparatedTooltipRendererParams = {
     pointPosition: { position: 'absolute', left: string, top: string, zIndex:number }; // position of the point on chart. `top` and `left` are calculated by percent.
     props: LineChartProps;    // props passed to LineChart component.
     labels: Label[];          // labels passed to LineChart component, or default value of labels if no label passed to the component.
+    estimatedValues: number[];// values estimated on related curve
+    estimatedValue: number;// value of current line estimated on all curves
 
     lineIndex: number;        // index of the line containing the rendering point.
     value: number | undefined; // value of the rendering point.

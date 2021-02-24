@@ -1,11 +1,12 @@
-import {DataType, LineChartProps} from "../models";
+import { DataType, LineChartProps } from "../models";
 import getMinAndMaxFromData from "./getMinAndMaxFromData";
 import {
     findNextIndexNotUndefinedValueInArray,
+    findPreviousIndexNotUndefinedDataInArray,
     findPreviousIndexNotUndefinedValueInArray
 } from "./findNextAndPreviousValueNotUndefinedValueInArray";
-import {Label} from "../models/labels";
-import {IndexesAxisInfo, ValuesAxisInfo} from "../models/axis";
+import { Label } from "../models/labels";
+import { IndexesAxisInfo, ValuesAxisInfo } from "../models/axis";
 
 
 export default class PointMapper<TData extends DataType> {
@@ -26,28 +27,50 @@ export default class PointMapper<TData extends DataType> {
     get valuesGroup(): (number | undefined)[][] {
         if (this._valuesGroupCache) return this._valuesGroupCache;
 
-        function selectValue(r: TData, ix: number, zeroAsUndefined = false) {
-            switch (typeof r) {
-                case 'number':
-                    return [r];
-                case "object":
-                    const ret = typeof valueSelector == 'function' ? valueSelector(r) : r[valueSelector as string];
-                    return Array.isArray(ret) ? ret : [ret];
-                case "undefined":
-                    if (zeroAsUndefined) return 0;
-
-                    const prev = findPreviousIndexNotUndefinedValueInArray(data, ix);
-                    const next = findNextIndexNotUndefinedValueInArray(data, ix);
-                    const prevFactor = ix - prev;
-                    const nextFactor = next - ix;
-                    const prevValue = selectValue(data[prev], ix, true);
-                    const nextValue = selectValue(data[next], ix, true);
-                    return [(prevValue * nextFactor + nextValue * prevFactor) / (prevFactor + nextFactor)];
+        function selectValue(r: TData) {
+            switch (typeof valueSelector) {
+                case 'function':
+                    return valueSelector(r);
+                case 'string':
+                    if (typeof r == 'object') {
+                        return r[valueSelector as string];
+                    }
             }
+            return r;
         }
 
         const {data, valueSelector} = this._props;
-        return this._valuesGroupCache = data.map((value, ix) => selectValue(value, ix));
+        return this._valuesGroupCache = data.map((value) => {
+            const selected = selectValue(value);
+            if (!Array.isArray(selected)) {
+                return [selected];
+            }
+            return selected;
+        });
+    }
+
+    private _estimatedValuesGroupCache?: number[][];
+
+    get estimatedValuesGroup(): number[][] {
+        if (this._estimatedValuesGroupCache) return this._estimatedValuesGroupCache;
+
+        const selectedFromData = this.valuesGroup;
+
+        function estimateValueFromPrevAndNextDefined(searchFromIndex: number, lineIndex: number) {
+            const prev = findPreviousIndexNotUndefinedValueInArray(selectedFromData, searchFromIndex, lineIndex);
+            const next = findNextIndexNotUndefinedValueInArray(selectedFromData, searchFromIndex, lineIndex);
+            const prevFactor = searchFromIndex - prev;
+            const nextFactor = next - searchFromIndex;
+            const prevValue = selectedFromData[prev][lineIndex]!;
+            const nextValue = selectedFromData[next][lineIndex]!;
+            return (prevValue * nextFactor + nextValue * prevFactor) / (prevFactor + nextFactor);
+        }
+
+        return this._estimatedValuesGroupCache = selectedFromData.map((array, searchFromIndex) =>
+            array.map((r, lineIndex) =>
+                r !== undefined ? r : estimateValueFromPrevAndNextDefined(searchFromIndex, lineIndex)
+            )
+        );
     }
 
 
@@ -62,11 +85,12 @@ export default class PointMapper<TData extends DataType> {
                 case 'number':
                     return ix;
                 case "object":
-                    if (!indexSelector)
+                    if (!indexSelector) {
                         return ix;
+                    }
                     return typeof indexSelector == 'function' ? indexSelector(r) : +(r as TData)[indexSelector];
                 case "undefined":
-                    return findPreviousIndexNotUndefinedValueInArray(data, ix);
+                    return findPreviousIndexNotUndefinedDataInArray(data, ix);
             }
         });
     }
@@ -74,18 +98,20 @@ export default class PointMapper<TData extends DataType> {
     private _axisInfoCache!: {
         indexAxis: IndexesAxisInfo;
         valueAxis: ValuesAxisInfo;
-    }
+    };
 
     get axisInfo() {
         if (this._axisInfoCache) return this._axisInfoCache;
 
-        const dataMaxMin = getMinAndMaxFromData(this.valuesGroup);
+        const dataMaxMin = getMinAndMaxFromData(this.estimatedValuesGroup);
 
         let {indexAxis, valueAxis} = this._props;
-        if (typeof indexAxis == 'function')
+        if (typeof indexAxis == 'function') {
             indexAxis = indexAxis(dataMaxMin);
-        if (typeof valueAxis == 'function')
+        }
+        if (typeof valueAxis == 'function') {
             valueAxis = valueAxis(dataMaxMin);
+        }
 
         indexAxis = {
             ...indexAxis,
@@ -98,7 +124,7 @@ export default class PointMapper<TData extends DataType> {
             maximumValue: (valueAxis || {}).maximumValue || dataMaxMin.maximumValue,
         };
 
-        this._axisInfoCache = {indexAxis, valueAxis}
+        this._axisInfoCache = {indexAxis, valueAxis};
         return this._axisInfoCache;
     }
 
@@ -110,7 +136,7 @@ export default class PointMapper<TData extends DataType> {
 
         if (!linesCount) return this._valuesAxisLinesInfoCache = [];
 
-        const lastLine = {percent: 1, value: maximumValue!}
+        const lastLine = {percent: 1, value: maximumValue!};
         if (linesCount === 1) return this._valuesAxisLinesInfoCache = [lastLine];
 
         const ret = new Array(linesCount);
@@ -131,7 +157,7 @@ export default class PointMapper<TData extends DataType> {
 
         if (!linesCount) return this._indexesAxisLinesInfoCache = [];
 
-        const lastLine = {percent: 1, value: this.indexes[this.indexes.length - 1]}
+        const lastLine = {percent: 1, value: this.indexes[this.indexes.length - 1]};
         if (linesCount === 1) return this._indexesAxisLinesInfoCache = [lastLine];
 
         const ret = new Array(linesCount);
@@ -140,7 +166,7 @@ export default class PointMapper<TData extends DataType> {
             const ix = Math.floor(percent * this.indexes.length);
             ret[i] = {percent, value: this.indexes[ix]};
         }
-        ret[linesCount - 1] = lastLine
+        ret[linesCount - 1] = lastLine;
         return this._indexesAxisLinesInfoCache = ret;
     }
 
@@ -153,8 +179,9 @@ export default class PointMapper<TData extends DataType> {
         this._labelCache = new Proxy(labels, {
             get(_: unknown, ix: number): any {
                 const newIx = ix % labels.length;
-                if (newIx != ix)
+                if (newIx != ix) {
                     return {...labels[newIx], title: 'value' + newIx};
+                }
                 return labels[ix];
             }
         }) as Label[];

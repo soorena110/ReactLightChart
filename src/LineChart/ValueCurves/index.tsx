@@ -5,7 +5,7 @@ import {LineChartAreaColor} from "../models/labels";
 
 export default function ValueCurves() {
     const context = useChartContext();
-    const {props, offsets, dataMapper:{valuesGroup, labels}} = context;
+    const {offsets, dataMapper:{valuesGroup, labels}} = context;
 
     return <>
         {valuesGroup[0].map((_, lineNumber) => {
@@ -26,9 +26,9 @@ export default function ValueCurves() {
 }
 
 function getPolylinePoints(lineNumber: number, context: ChartContextInfo) {
-    const {dataMapper: {valuesGroup, indexes}} = context;
+    const {dataMapper: {estimatedValuesGroup, indexes}} = context;
     const points = indexes.map((_, ix) => {
-        const value = valuesGroup[ix][lineNumber];
+        const value = estimatedValuesGroup[ix][lineNumber];
         return getPointPosition(ix, value, context);
     });
     return points.map(pointToString).join(' ');

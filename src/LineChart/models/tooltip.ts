@@ -9,6 +9,7 @@ type PointParameters<TData extends DataType> = {
     nextDefinedData: TData;
     index: string | number;
     values: (number | undefined)[];
+    estimatedValues: number[];
     arrayIndex: number;
     pointPosition: { position: 'absolute', left: string, top: string, zIndex: number };
     props: LineChartProps<TData>;
@@ -21,5 +22,6 @@ export type TooltipRendererParams<TData extends DataType> = PointParameters<TDat
 
 export type SeparatedTooltipRendererParams<TData extends DataType> = PointParameters<TData> & {
     value: number | undefined;
+    estimatedValue: number;
     lineIndex: number;
 }

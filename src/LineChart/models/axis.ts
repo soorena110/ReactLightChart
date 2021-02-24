@@ -16,3 +16,8 @@ export type ValuesAxisInfo = IndexesAxisInfo & {
     maximumValue?: number;
     renderLabels?: (value: number) => React.ReactNode;
 }
+
+export type ValuesInfo = {
+    minimumValue: number;
+    maximumValue: number;
+}

@@ -1,9 +1,9 @@
-import {ValuesInfo} from "../models";
+import { ValuesInfo } from '../models/axis';
 
 export default function getMinAndMaxFromData(valuesList) {
     const ret: ValuesInfo = {
-        minimumValue: Math.min(...valuesList.map(ys => Math.min(...ys.filter(r=>r!=undefined)))),
-        maximumValue: Math.max(...valuesList.map(ys => Math.max(...ys.filter(r=>r!=undefined))))
+        minimumValue: Math.min(...valuesList.map(ys => Math.min(...ys.filter(r => r != undefined)))),
+        maximumValue: Math.max(...valuesList.map(ys => Math.max(...ys.filter(r => r != undefined))))
     };
     return ret;
 }

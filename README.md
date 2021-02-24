@@ -252,7 +252,7 @@ type PointParameters = {
     index: string | number;   // index of current hovered point
     values: (number | undefined)[]; // values of current hovered point. It's array because we may have multiple lines, so we have multiple value at the same hovering point.
     arrayIndex: number;       // index of current hovered point in array of data passed to LineChart component
-    pointPosition: { position: 'absolute', left: string, top: string }; // position of the point on chart. `top` and `left` are calculated by percent.
+    pointPosition: { position: 'absolute', left: string, top: string, zIndex:number }; // position of the point on chart. `top` and `left` are calculated by percent.
     props: LineChartProps;    // props passed to LineChart component.
     labels: Label[];          // labels passed to LineChart component, or default value of labels if no label passed to the component.
 
@@ -291,7 +291,7 @@ type SeparatedTooltipRendererParams = {
     index: string | number;   // index of current hovered point
     values: (number | undefined)[]; // values of current hovered point. It's array because we may have multiple lines, so we have multiple value at the same hovering point.
     arrayIndex: number;       // index of current hovered point in array of data passed to LineChart component
-    pointPosition: { position: 'absolute', left: string, top: string }; // position of the point on chart. `top` and `left` are calculated by percent.
+    pointPosition: { position: 'absolute', left: string, top: string, zIndex:number }; // position of the point on chart. `top` and `left` are calculated by percent.
     props: LineChartProps;    // props passed to LineChart component.
     labels: Label[];          // labels passed to LineChart component, or default value of labels if no label passed to the component.
 

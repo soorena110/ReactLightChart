@@ -89,13 +89,13 @@ export default class PointMapper<TData extends DataType> {
 
         indexAxis = {
             ...indexAxis,
-            linesCount: indexAxis?.linesCount === undefined ? 5 : indexAxis?.linesCount,
+            linesCount: (indexAxis || {}).linesCount === undefined ? 5 : (indexAxis || {}).linesCount,
         };
         valueAxis = {
             ...valueAxis,
-            linesCount: valueAxis?.linesCount === undefined ? 4 : valueAxis?.linesCount,
-            minimumValue: valueAxis?.minimumValue || dataMaxMin.minimumValue,
-            maximumValue: valueAxis?.maximumValue || dataMaxMin.maximumValue,
+            linesCount: (valueAxis || {}).linesCount === undefined ? 4 : (valueAxis || {}).linesCount,
+            minimumValue: (valueAxis || {}).minimumValue || dataMaxMin.minimumValue,
+            maximumValue: (valueAxis || {}).maximumValue || dataMaxMin.maximumValue,
         };
 
         this._axisInfoCache = {indexAxis, valueAxis}

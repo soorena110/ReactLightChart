@@ -1,6 +1,6 @@
 import * as React from "react";
-import {Label} from "./labels";
-import {DataType, LineChartProps} from "../models";
+import { Label } from "./labels";
+import { DataType, LineChartProps } from "./index";
 
 
 type PointParameters<TData extends DataType> = {
@@ -10,7 +10,7 @@ type PointParameters<TData extends DataType> = {
     index: string | number;
     values: (number | undefined)[];
     arrayIndex: number;
-    pointPosition: { position: 'absolute', left: string, top: string };
+    pointPosition: { position: 'absolute', left: string, top: string, zIndex: number };
     props: LineChartProps<TData>;
     labels: Label[];
 }

@@ -1,6 +1,6 @@
 import * as React from "react";
-import {useCallback, useState} from "react";
-import {ChartContextInfo, useChartContext} from "../context";
+import { useCallback, useState } from "react";
+import { ChartContextInfo, useChartContext } from "../context";
 import {
     findNextIndexNotUndefinedValueInArray,
     findPreviousIndexNotUndefinedValueInArray
@@ -11,7 +11,7 @@ export default function HoverLayer() {
     const {offsets} = useChartContext();
     const [mouseXByPercent, setMouseXByPercent] = useState<number>();
 
-    const handleMouseMove = useCallback(function (e: React.MouseEvent<SVGElement>) {
+    const handleMouseMove = useCallback(function (e: React.MouseEvent<HTMLDivElement>) {
         const bound = e.currentTarget.getBoundingClientRect();
 
         const effectiveBound = {
@@ -24,12 +24,14 @@ export default function HoverLayer() {
         const effectiveOffsetX = e.clientX - bound.x - effectiveBound.left;
         let mouseXByPercent = effectiveOffsetX / effectiveBound.width;
 
-        if (mouseXByPercent < 0)
+        if (mouseXByPercent < 0) {
             mouseXByPercent = 0;
-        if (mouseXByPercent > 1)
+        }
+        if (mouseXByPercent > 1) {
             mouseXByPercent = 1;
-        setMouseXByPercent(mouseXByPercent)
-    }, [])
+        }
+        setMouseXByPercent(mouseXByPercent);
+    }, []);
 
     function handleMouseLeave() {
         setMouseXByPercent(undefined);
@@ -37,13 +39,14 @@ export default function HoverLayer() {
 
     return <React.Fragment>
         <svg style={{position: 'absolute', top: 0, left: 0}}
-             width="100%" height="100%" preserveAspectRatio="none"
-             onMouseMove={e => handleMouseMove(e)}
-             onMouseLeave={() => handleMouseLeave()}>
+             width="100%" height="100%" preserveAspectRatio="none">
             {renderSelectorLine(mouseXByPercent)}
         </svg>
         {renderTooltip(mouseXByPercent)}
-    </React.Fragment>
+        <div style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 999999}}
+             onMouseMove={e => handleMouseMove(e)}
+             onMouseLeave={() => handleMouseLeave()}/>
+    </React.Fragment>;
 }
 
 
@@ -51,8 +54,9 @@ function renderTooltip(mouseXByPercent?: number) {
     const context = useChartContext();
     const {props, dataMapper: {valuesGroup, indexes, labels}} = context;
 
-    if (mouseXByPercent == undefined)
+    if (mouseXByPercent == undefined) {
         return null;
+    }
 
     const currentIndex = Math.round(mouseXByPercent * (indexes.length - 1));
     const xValueInThisIndex = indexes[currentIndex];
@@ -60,32 +64,33 @@ function renderTooltip(mouseXByPercent?: number) {
 
     const fixOffset = 5;
 
-    const prev = findPreviousIndexNotUndefinedValueInArray(props.data, currentIndex || 1)
-    const next = findNextIndexNotUndefinedValueInArray(props.data, Math.min(props.data.length - 2, currentIndex))
+    const prev = findPreviousIndexNotUndefinedValueInArray(props.data, currentIndex || 1);
+    const next = findNextIndexNotUndefinedValueInArray(props.data, Math.min(props.data.length - 2, currentIndex));
 
-    if (props.renderSeparatedTooltip)
+    if (props.renderSeparatedTooltip) {
         return values.map(
             (value, valueIndex) => {
                 const {x, y} = getPointPosition(currentIndex, values[valueIndex]!, context);
                 return <React.Fragment key={valueIndex}>
                     {props.renderSeparatedTooltip!({
                         props, values, lineIndex: valueIndex, value, labels,
-                        pointPosition: {left: x + '%', top: y + '%', position: 'absolute'},
+                        pointPosition: {left: x + '%', top: y + '%', position: 'absolute', zIndex: 99},
                         data: props.data[currentIndex],
                         prevDefinedData: props.data[prev],
                         nextDefinedData: props.data[next],
                         arrayIndex: currentIndex,
                         index: xValueInThisIndex,
                     })}
-                </React.Fragment>
+                </React.Fragment>;
             }
         );
+    }
 
     if (props.renderTooltip) {
         const {x, y} = getPointPosition(currentIndex, values[0]!, context);
         return props.renderTooltip({
             props, labels, values,
-            pointPosition: {left: x + '%', top: y + '%', position: 'absolute'},
+            pointPosition: {left: x + '%', top: y + '%', position: 'absolute', zIndex: 99},
             defaultCssProps: {
                 ...s.lineChartTooltip,
                 top: y < 50 ? y + fixOffset + '%' : undefined,
@@ -98,7 +103,7 @@ function renderTooltip(mouseXByPercent?: number) {
             nextDefinedData: props.data[next],
             arrayIndex: currentIndex,
             index: xValueInThisIndex,
-        })
+        });
     }
 
     return null;
@@ -109,8 +114,9 @@ function renderSelectorLine(mouseXByPercent?: number) {
     const context = useChartContext();
     const {offsets, dataMapper: {valuesGroup, labels}} = context;
 
-    if (mouseXByPercent == undefined)
+    if (mouseXByPercent == undefined) {
         return null;
+    }
 
     const currentIndex = Math.round(mouseXByPercent * (valuesGroup.length - 1));
     const xValueInThisIndex = valuesGroup[currentIndex];
@@ -139,7 +145,7 @@ function renderSelectorLine(mouseXByPercent?: number) {
                   y2={thePointPosition.y + '%'}
                   style={s.lineChartSelectionLine}
                   stroke={color}/>
-        </React.Fragment>
+        </React.Fragment>;
     });
 }
 
@@ -149,7 +155,7 @@ function getPointPosition(index: number, values: number, {offsets, dataMapper}: 
     return {
         x: x * (offsets.innerWidth) + offsets.left,
         y: (1 - y) * (offsets.innerHeight) + offsets.top
-    }
+    };
 }
 
 const s = {
@@ -171,4 +177,4 @@ const s = {
         border: 'solid 1px #dfe3e6',
         zIndex: 9999
     } as React.CSSProperties
-}
+};

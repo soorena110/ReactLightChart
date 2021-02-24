@@ -1,12 +1,7 @@
 import * as React from "react";
-import {Label} from "./models/labels";
-import {IndexesAxisInfo, ValuesAxisInfo} from "./models/axis";
-import {SeparatedTooltipRendererParams, TooltipRendererParams} from "./models/tooltip";
-
-export type ValuesInfo = {
-    minimumValue: number;
-    maximumValue: number;
-}
+import { Label } from "./labels";
+import { IndexesAxisInfo, ValuesAxisInfo, ValuesInfo } from "./axis";
+import { SeparatedTooltipRendererParams, TooltipRendererParams } from "./tooltip";
 
 
 export type DataType = object | number | undefined;

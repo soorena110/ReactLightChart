@@ -20,7 +20,7 @@ function renderVerticalDivided() {
             return <line key={y}
                          {...valueAxis.linesProps}
                          x1={x1} y1={y} x2={x2} y2={y}
-                         style={{...s.lineChartAxisLine, ...valueAxis.linesProps?.style}}>{r.percent}</line>
+                         style={{...s.lineChartAxisLine, ...(valueAxis.linesProps || {}).style}}>{r.percent}</line>
         }
     )
 }
@@ -35,7 +35,7 @@ function renderHorizontalDivided() {
         return <line key={x}
                      {...indexAxis.linesProps}
                      x1={x} y1={y1} x2={x} y2={y2}
-                     style={{...s.lineChartAxisLine, ...indexAxis.linesProps?.style}}/>
+                     style={{...s.lineChartAxisLine, ...(indexAxis.linesProps || {}).style}}/>
     })
 }
 

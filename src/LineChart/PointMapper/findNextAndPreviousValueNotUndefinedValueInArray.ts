@@ -1,5 +1,5 @@
 export function findPreviousIndexNotUndefinedDataInArray(array: unknown[], ix): number {
-    for (let i = ix - 1; i < array.length; i--) {
+    for (let i = ix - 1; i >= 0; i--) {
         if (array[i]) {
             return i;
         }
@@ -17,8 +17,8 @@ export function findNextIndexNotUndefinedDataInArray(array: unknown[], ix): numb
 }
 
 export function findPreviousIndexNotUndefinedValueInArray(array: (number | undefined)[][], searchFromIndex: number, propName: number): number {
-    for (let i = searchFromIndex - 1; i < array.length; i--) {
-        if (array[i][propName] !== undefined) {
+    for (let i = searchFromIndex - 1; i >= 0; i--) {
+        if (array[i] && array[i][propName] !== undefined) {
             return i;
         }
     }
@@ -27,7 +27,7 @@ export function findPreviousIndexNotUndefinedValueInArray(array: (number | undef
 
 export function findNextIndexNotUndefinedValueInArray(array: (number | undefined)[][], searchFromIndex: number, propName: number): number {
     for (let i = searchFromIndex + 1; i < array.length; i++) {
-        if (array[i][propName] !== undefined) {
+        if (array[i] && array[i][propName] !== undefined) {
             return i;
         }
     }

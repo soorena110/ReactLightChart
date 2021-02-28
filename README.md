@@ -247,8 +247,8 @@ Here, `renderTooltip` is a function with one argument of type `TooltipRendererPa
 ```ts
 type PointParameters = {
     data: object;             // data of current hovered point
-    prevDefinedData: object;  // data of previous defined point, used when `data` is undefined.
-    nextDefinedData: object;  // data of next defined point, used when `data` is undefined.
+    prevDefinedData?: object;  // data of previous defined point, used when `data` is undefined.
+    nextDefinedData?: object;  // data of next defined point, used when `data` is undefined.
     index: string | number;   // index of current hovered point
     values: (number | undefined)[]; // values of current hovered point. It's array because we may have multiple lines, so we have multiple value at the same hovering point.
     arrayIndex: number;       // index of current hovered point in array of data passed to LineChart component
@@ -287,8 +287,8 @@ properties:
 ```ts
 type SeparatedTooltipRendererParams = {
     data: object;             // data of current hovered point
-    prevDefinedData: object;  // data of previous defined point, used when `data` is undefined.
-    nextDefinedData: object;  // data of next defined point, used when `data` is undefined.
+    prevDefinedData?: object;  // data of previous defined point, used when `data` is undefined.
+    nextDefinedData?: object;  // data of next defined point, used when `data` is undefined.
     index: string | number;   // index of current hovered point
     values: (number | undefined)[]; // values of current hovered point. It's array because we may have multiple lines, so we have multiple value at the same hovering point.
     arrayIndex: number;       // index of current hovered point in array of data passed to LineChart component
@@ -296,7 +296,9 @@ type SeparatedTooltipRendererParams = {
     props: LineChartProps;    // props passed to LineChart component.
     labels: Label[];          // labels passed to LineChart component, or default value of labels if no label passed to the component.
     estimatedValues: number[];// values estimated on related curve
-    estimatedValue: number;// value of current line estimated on all curves
+    estimatedValue: number;   // value of current line estimated on all curves
+    prevDefinedValue?: number; // first previous defined value before current hovered index
+    nextDefinedValue?: number; // first next defined value before current hovered index
 
     lineIndex: number;        // index of the line containing the rendering point.
     value: number | undefined; // value of the rendering point.

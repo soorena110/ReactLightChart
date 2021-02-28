@@ -5,8 +5,8 @@ import { DataType, LineChartProps } from "./index";
 
 type PointParameters<TData extends DataType> = {
     data: TData;
-    prevDefinedData: TData;
-    nextDefinedData: TData;
+    prevDefinedData?: TData;
+    nextDefinedData?: TData;
     index: string | number;
     values: (number | undefined)[];
     estimatedValues: number[];
@@ -24,4 +24,6 @@ export type SeparatedTooltipRendererParams<TData extends DataType> = PointParame
     value: number | undefined;
     estimatedValue: number;
     lineIndex: number;
+    prevDefinedValue?: number;
+    nextDefinedValue?: number;
 }

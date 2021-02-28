@@ -3,7 +3,9 @@ import { useCallback, useState } from "react";
 import { ChartContextInfo, useChartContext } from "../context";
 import {
     findNextIndexNotUndefinedDataInArray,
-    findPreviousIndexNotUndefinedDataInArray
+    findNextIndexNotUndefinedValueInArray,
+    findPreviousIndexNotUndefinedDataInArray,
+    findPreviousIndexNotUndefinedValueInArray
 } from "../PointMapper/findNextAndPreviousValueNotUndefinedValueInArray";
 
 
@@ -68,20 +70,30 @@ function renderTooltip(mouseXByPercent?: number) {
     const prev = findPreviousIndexNotUndefinedDataInArray(props.data, currentIndex || 1);
     const next = findNextIndexNotUndefinedDataInArray(props.data, Math.min(props.data.length - 2, currentIndex));
 
+    const commonParamsOnBothTooltips = {
+        props, values, labels,
+        data: props.data[currentIndex],
+        arrayIndex: currentIndex,
+        index: xValueInThisIndex,
+    };
+
     if (props.renderSeparatedTooltip) {
         return estimatedValues.map(
             (estimatedValue, valueIndex) => {
                 const {x, y} = getPointPosition(currentIndex, estimatedValues[valueIndex]!, context);
+                const prev = findPreviousIndexNotUndefinedValueInArray(valuesGroup, currentIndex, valueIndex);
+                const next = findNextIndexNotUndefinedValueInArray(valuesGroup, currentIndex, valueIndex);
+
                 return <React.Fragment key={valueIndex}>
                     {props.renderSeparatedTooltip!({
-                        props, values, lineIndex: valueIndex, labels, estimatedValue, estimatedValues,
-                        value: values[valueIndex],
-                        pointPosition: {left: x + '%', top: y + '%', position: 'absolute', zIndex: 99},
-                        data: props.data[currentIndex],
+                        ...commonParamsOnBothTooltips, lineIndex: valueIndex,
+                        estimatedValue, estimatedValues,
                         prevDefinedData: props.data[prev],
                         nextDefinedData: props.data[next],
-                        arrayIndex: currentIndex,
-                        index: xValueInThisIndex,
+                        value: values[valueIndex],
+                        pointPosition: {left: x + '%', top: y + '%', position: 'absolute', zIndex: 99},
+                        prevDefinedValue: (valuesGroup[prev] || {})[valueIndex],
+                        nextDefinedValue: (valuesGroup[next] || {})[valueIndex],
                     })}
                 </React.Fragment>;
             }
@@ -91,7 +103,7 @@ function renderTooltip(mouseXByPercent?: number) {
     if (props.renderTooltip) {
         const {x, y} = getPointPosition(currentIndex, values[0]!, context);
         return props.renderTooltip({
-            props, labels, values, estimatedValues,
+            ...commonParamsOnBothTooltips, estimatedValues,
             pointPosition: {left: x + '%', top: y + '%', position: 'absolute', zIndex: 99},
             defaultCssProps: {
                 ...s.lineChartTooltip,
@@ -100,11 +112,8 @@ function renderTooltip(mouseXByPercent?: number) {
                 left: x < 50 ? x + fixOffset + '%' : undefined,
                 right: x < 50 ? undefined : 100 - x + fixOffset + '%'
             },
-            data: props.data[currentIndex],
             prevDefinedData: props.data[prev],
             nextDefinedData: props.data[next],
-            arrayIndex: currentIndex,
-            index: xValueInThisIndex,
         });
     }
 

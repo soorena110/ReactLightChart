@@ -8,6 +8,13 @@ type valueSelector = {
 export const data4: LineChartProps<valueSelector> = {
     valueSelector: e => [e.nav],
     indexSelector: e => e.timestamp,
+    indexAxis: {
+        linesCount: 5
+    },
+    valueAxis: {
+        linesCount: 8,
+        minimumValue: 0
+    },
     data: [
         {
             timestamp: 1611995454,
@@ -83,11 +90,11 @@ export const data4: LineChartProps<valueSelector> = {
             nav: 6027
         }],
     renderSeparatedTooltip(e) {
-        console.log(e)
+        console.log(e);
         return <span style={{
             ...e.pointPosition,
             color: e.labels[e.lineIndex].labelColor,
-            background:'white'
+            background: 'white'
         }}>
             <div>value:{e.value}</div>
             <div>prevDefinedValue:{e.prevDefinedValue}</div>

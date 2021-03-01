@@ -117,11 +117,14 @@ export default class PointMapper<TData extends DataType> {
             ...indexAxis,
             linesCount: (indexAxis || {}).linesCount === undefined ? 5 : (indexAxis || {}).linesCount,
         };
+
+        const minimumValue = (valueAxis || {}).minimumValue;
+        const maximumValue = (valueAxis || {}).maximumValue;
         valueAxis = {
             ...valueAxis,
             linesCount: (valueAxis || {}).linesCount === undefined ? 4 : (valueAxis || {}).linesCount,
-            minimumValue: (valueAxis || {}).minimumValue || dataMaxMin.minimumValue,
-            maximumValue: (valueAxis || {}).maximumValue || dataMaxMin.maximumValue,
+            minimumValue: minimumValue == undefined ? dataMaxMin.minimumValue : minimumValue,
+            maximumValue: maximumValue == undefined ? dataMaxMin.maximumValue : maximumValue,
         };
 
         this._axisInfoCache = {indexAxis, valueAxis};

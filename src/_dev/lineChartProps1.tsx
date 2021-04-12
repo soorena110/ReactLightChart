@@ -35,7 +35,7 @@ export const data1: LineChartProps<number | undefined> = {
 
     renderTooltip(e) {
         const c = e.data || e.prevDefinedData!;
-        return <span style={e.pointPosition}>
+        return <span style={e.position}>
             <div>{e.index} : {c}</div>
         </span>
     },

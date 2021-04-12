@@ -92,7 +92,7 @@ export const data4: LineChartProps<valueSelector> = {
     renderSeparatedTooltip(e) {
         console.log(e);
         return <span style={{
-            ...e.pointPosition,
+            ...e.position,
             color: e.labels[e.lineIndex].labelColor,
             background: 'white'
         }}>

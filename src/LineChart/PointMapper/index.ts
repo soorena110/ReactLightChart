@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DataType, LineChartProps } from "../models";
 import getMinAndMaxFromData from "./getMinAndMaxFromData";
 import {
+    findNextIndexNotUndefinedDataInArray,
     findNextIndexNotUndefinedValueInArray,
     findPreviousIndexNotUndefinedDataInArray,
     findPreviousIndexNotUndefinedValueInArray
 } from "./findNextAndPreviousValueNotUndefinedValueInArray";
 import { Label } from "../models/labels";
 import { IndexesAxisInfo, ValuesAxisInfo } from "../models/axis";
+import { LinePointParameters, PointParameters } from '../models/hover';
 
 
 export default class PointMapper<TData extends DataType> {
@@ -190,4 +193,49 @@ export default class PointMapper<TData extends DataType> {
         }) as Label[];
         return this._labelCache!;
     }
+
+    getPointEventArgs(pointIndex: number): PointParameters<TData> {
+        const {_props, valuesGroup, labels, indexes, estimatedValuesGroup} = this;
+        return {
+            props: _props,
+            values: valuesGroup[pointIndex],
+            labels: labels,
+            data: _props.data[pointIndex],
+            arrayIndex: pointIndex,
+            index: indexes[pointIndex],
+            estimatedValues: estimatedValuesGroup[pointIndex]
+        };
+    }
+
+    getLineEventArg(pointIndex: number) {
+        const {_props: {data}} = this;
+        const prev = findPreviousIndexNotUndefinedDataInArray(data, pointIndex || 1);
+        const next = findNextIndexNotUndefinedDataInArray(data, Math.min(data.length - 2, pointIndex));
+        const args = this.getPointEventArgs(pointIndex);
+
+        return {
+            ...args,
+            prevDefinedData: data[prev],
+            nextDefinedData: data[next],
+        };
+    }
+
+    getLinePointEventArgs(lineNumber: number, pointIndex: number): LinePointParameters<TData> {
+        const {_props: {data}, valuesGroup} = this;
+        const prev = findPreviousIndexNotUndefinedValueInArray(valuesGroup, pointIndex, lineNumber);
+        const next = findNextIndexNotUndefinedValueInArray(valuesGroup, pointIndex, lineNumber);
+        const args = this.getPointEventArgs(pointIndex);
+
+        return {
+            ...args,
+            prevDefinedData: data[prev],
+            nextDefinedData: data[next],
+            prevDefinedValue: (valuesGroup[prev] || {})[lineNumber],
+            nextDefinedValue: (valuesGroup[next] || {})[lineNumber],
+            estimatedValue:args.estimatedValues[lineNumber],
+            value: args.values[lineNumber],
+            lineIndex:lineNumber
+        };
+    }
+
 }

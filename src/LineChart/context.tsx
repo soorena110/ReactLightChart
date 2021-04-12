@@ -1,25 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {LineChartProps} from "./models";
 import {default as PointMapper} from "./PointMapper";
 import React, {useContext, useMemo} from "react";
 import {getChartOffset} from "./index";
+import { ChartSizesInfo } from './models/sizes';
 
 export interface ChartContextInfo {
     props: LineChartProps<any>;
     dataMapper: PointMapper<any>;
-    offsets: ChartOffsetsInfo
+    offsets: ChartSizesInfo
 }
 
-
-export interface ChartOffsetsInfo {
-    left: number;
-    bottom: number;
-    right: number;
-    top: number;
-    width: number;
-    height: number;
-    innerHeight: number;
-    innerWidth: number;
-}
 
 // @ts-ignore
 export const contextObject = React.createContext<ChartContextInfo>({});

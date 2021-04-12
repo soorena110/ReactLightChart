@@ -14,7 +14,7 @@ export const data3: LineChartProps<any> = {
         {v1: 1, v2: 2, v3: 11, v4: 4, v5: 9, v6: 21, v7: 8, v8: 6, extraData: 'eight'}
     ],
     renderSeparatedTooltip(e) {
-        return <span style={{...e.pointPosition, color: e.labels[e.lineIndex].labelColor}}>
+        return <span style={{...e.position, color: e.labels[e.lineIndex].labelColor}}>
             {e.value}
         </span>
     },

@@ -27,6 +27,7 @@ You can clone code and run `npm start` to see below examples in `src/_dev` folde
 <img alt="exmaple 2" src="./readme/2.png"/>
 <img alt="exmaple 3" src="./readme/3.png"/>
 <img alt="exmaple 4" src="./readme/4.png"/>
+<img alt="exmaple 5" src="./readme/5.png"/>
 
 ## How to Use
 
@@ -83,8 +84,10 @@ return <LineChart data={data}
 | indexAxis     | `IndexesAxisInfo` or `(e:ValuesInfo) => IndexesAxisInfo` | for customizing indexes axis (horizontal) | see #IndexesAxisInfo paragraph for more information. |
 | valueAxis     | `ValuesAxisInfo` or `(e:ValuesInfo) => ValuesAxisInfo` | for customizing values axis (vertical) | see #ValuesAxisInfo paragraph for more information. |
 | overrideSizes | an object containing of `left`, `bottom`, `right`, `top`, `width`, `height`. all these values are **number**. | Indicates the offsets of chart from 4 sides. | {left: 5, bottom: 8, right: 0, top: 2, width: 100, height: 100,} |
-| renderTooltip | **null** or `(e:TooltipRendererParams) => ReactNode` | If you pass null, default tooltip will disappear. If you pass a renderer function, it will be shown for every point hover as a tooltip. | See default value in #Tooltip paragraph. |
-| renderSeparatedTooltip | `(e:SeparatedTooltipRendererParams) => ReactNode` | If you pass a renderer function, it will create multiple tooltips for every point hover, and one for each line. If you pass value to this property, `renderTooltip` will be ignored. | **undefined** |
+| renderTooltip | **null** or `(e:TooltipRendererParams) => ReactNode` | If you pass null, default tooltip will disappear. If you pass a renderer function, it will be shown for every point hover as a tooltip. | `defaultTooltipRenderer`. See default value in #Tooltip paragraph. |
+| renderSeparatedTooltip | `(e:SeparatedTooltipRendererParams) => ReactNode` | If you pass a renderer function, it will create multiple tooltips for every point hover, and one for each line. If you pass value to this property, `renderTooltip` will be ignored. |  **undefined** See default value in #SeparatedTooltip paragraph |
+| renderStep | `(e:HoverLineRenderer) => ReactNode` | If you pass null, the default step renderer will be disabled. If you pass a renderer function, it will create steps for every point on the diagram. | `defaultStepRenderer`. See default value in #Step paragraph.  |
+| renderHoverLine | `(e:SeparatedTooltipRendererParams) => ReactNode` | If you pass null, the default hover line renderer will be disabled. If you pass a renderer function, it will be run multiple times for every point in hovered line. | `defaultHoverLineRenderer` See default value in #HoverLine paragraph |
 
 
 #### Labels
@@ -93,10 +96,17 @@ Label type is as follows ↓
 
 ```ts
 type Label = {
-    title?: string; // just to show the name in `default tooltip`.
-    stroke?: string; // line color
-    area?: LineChartAreaColor; // show gradient color below of the line 
-    labelColor?: string; // just to show the color for the name or value in `default tooltip`.
+    stroke?: string | ((params: LinePointParameters<TData>) => string); // line color
+    area?: LineChartAreaColor | ((params: LinePointParameters<TData>) => LineChartAreaColor); // show gradient color below of the line 
+    hoverColor?: string; // just for the color of `default hover line`.
+
+    comparativeLabelIndex?: number; // if you add label index, `stroke` will be computed again when the comparative polyline collides the current line
+    gradientTowardLabelIndex?: number; // if you add label index, `area` will be computed again when the comparative polyline collides the current line
+  
+    title?: string; // just for the name in `default tooltip`.
+    labelColor?: string; // just for the color for the label or value in `default tooltip`.
+    textColor?: string;  // just for the color for the text or value in `default tooltip`.
+  
 }
 ```
 
@@ -302,6 +312,102 @@ type SeparatedTooltipRendererParams = {
 
     lineIndex: number;        // index of the line containing the rendering point.
     value: number | undefined; // value of the rendering point.
+}
+```
+
+#### Step
+
+You can pass `renderStep` prop to show multiple tooltips for each line at the same point.
+`renderStep` is a function for as shown in following example :
+
+```tsx
+<LineChart data={data}
+           style={style}
+           className="foo"
+           renderStep={e => {
+               return <circle cx={e.position.left}
+                              cy={e.position.top}
+                              r={5}
+                              fill={e.color}/>
+           }}/>
+```
+
+This function will be run multiple time for each step on each point of each line on the diagram.
+Remember, you should add style of returning node, unless the step does not work well.
+
+Here, `renderStep` is a function with one argument of type `StepRendererParams` that contains below
+properties:
+
+```ts
+type StepRendererParams = {
+    data: object;             // data of current hovered point
+    prevDefinedData?: object;  // data of previous defined point, used when `data` is undefined.
+    nextDefinedData?: object;  // data of next defined point, used when `data` is undefined.
+    index: string | number;   // index of current hovered point
+    values: (number | undefined)[]; // values of current hovered point. It's array because we may have multiple lines, so we have multiple value at the same hovering point.
+    arrayIndex: number;       // index of current hovered point in array of data passed to LineChart component
+    position: { left: string, top: string, zIndex: number }; // position of the point on chart. `top` and `left` are calculated by percent.
+    props: LineChartProps;    // props passed to LineChart component.
+    labels: Label[];          // labels passed to LineChart component, or default value of labels if no label passed to the component.
+    estimatedValues: number[];// values estimated on related curve
+    estimatedValue: number;   // value of current line estimated on all curves
+    prevDefinedValue?: number; // first previous defined value before current hovered index
+    nextDefinedValue?: number; // first next defined value before current hovered index
+
+    lineIndex: number;        // index of the line containing the rendering point.
+    value: number | undefined; // value of the rendering point.
+
+    hovered: boolean;         // shows whether current step is hovered or not. 
+    color?: string;           // shows stroke color for this step
+}
+```
+
+#### Step
+
+You can pass `renderHoverLine` prop to show multiple tooltips for each line at the same point.
+`renderHoverLine` is a function for as shown in following example :
+
+```tsx
+<LineChart data={data}
+           style={style}
+           className="foo"
+           renderHoverLine={e => {
+               if (e.lineIndex !== 1) return null; // we want to show a vertical line just for second diagram polyline. (array starts from 0!!!)
+               return <line x1={e.position.top}
+                            x2={e.position.top}
+                            y1={e.sizes.top + '%'}
+                            y2={e.sizes.height - sizes.bottom + '%'}
+                            stroke='deepskyblue'/>
+           }}/>
+```
+
+This function will be run multiple time for each step on each point the current hovered column on the diagram.
+Remember, you should add style of returning node, unless the hover line does not work well.
+
+Here, `renderHoverLine` is a function with one argument of type `HoverLineRenderer` that contains below
+properties:
+
+```ts
+type HoverLineRendererParams = {
+    data: object;             // data of current hovered point
+    prevDefinedData?: object;  // data of previous defined point, used when `data` is undefined.
+    nextDefinedData?: object;  // data of next defined point, used when `data` is undefined.
+    index: string | number;   // index of current hovered point
+    values: (number | undefined)[]; // values of current hovered point. It's array because we may have multiple lines, so we have multiple value at the same hovering point.
+    arrayIndex: number;       // index of current hovered point in array of data passed to LineChart component
+    position: { left: string, top: string, zIndex: number }; // position of the point on chart. `top` and `left` are calculated by percent.
+    props: LineChartProps;    // props passed to LineChart component.
+    labels: Label[];          // labels passed to LineChart component, or default value of labels if no label passed to the component.
+    estimatedValues: number[];// values estimated on related curve
+    estimatedValue: number;   // value of current line estimated on all curves
+    prevDefinedValue?: number; // first previous defined value before current hovered index
+    nextDefinedValue?: number; // first next defined value before current hovered index
+
+    lineIndex: number;        // index of the line containing the rendering point.
+    value: number | undefined; // value of the rendering point.
+
+    sizes: object;            // sizes of diagram, to justify render output.
+    color?: string;           // shows `hoverColor` or `labelColor` of label of current polyline.
 }
 ```
 

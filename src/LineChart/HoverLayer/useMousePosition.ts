@@ -28,7 +28,7 @@ export default function useMousePosition() {
 
     const pointIndex = mouseXByPercent != undefined ? Math.round(mouseXByPercent * (indexes.length - 1)) : undefined;
 
-    useEffect(() => onSelect?.(pointIndex), [pointIndex, onSelect]);
+    useEffect(() =>onSelect && onSelect(pointIndex), [pointIndex, onSelect]);
 
     return {
         pointIndex: selectedIndex || pointIndex,

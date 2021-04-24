@@ -19,6 +19,7 @@ export default function HoverLayer() {
         </svg>
         <Tooltip pointIndex={pointIndex}/>
         <div style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 15}}
+             tabIndex={9999}
              onMouseMove={e => props.selectTrigger == 'hover' && handler(e)}
              onMouseLeave={() => props.deselectTrigger == 'leave' && deselect()}
              onClick={e => props.selectTrigger == 'click' && handler(e)}

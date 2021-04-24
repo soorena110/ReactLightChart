@@ -86,8 +86,12 @@ return <LineChart data={data}
 | overrideSizes | an object containing of `left`, `bottom`, `right`, `top`, `width`, `height`. all these values are **number**. | Indicates the offsets of chart from 4 sides. | {left: 5, bottom: 8, right: 0, top: 2, width: 100, height: 100,} |
 | renderTooltip | **null** or `(e:TooltipRendererParams) => ReactNode` | If you pass null, default tooltip will disappear. If you pass a renderer function, it will be shown for every point hover as a tooltip. | `defaultTooltipRenderer`. See default value in #Tooltip paragraph. |
 | renderSeparatedTooltip | `(e:SeparatedTooltipRendererParams) => ReactNode` | If you pass a renderer function, it will create multiple tooltips for every point hover, and one for each line. If you pass value to this property, `renderTooltip` will be ignored. |  **undefined** See default value in #SeparatedTooltip paragraph |
-| renderStep | `(e:HoverLineRenderer) => ReactNode` | If you pass null, the default step renderer will be disabled. If you pass a renderer function, it will create steps for every point on the diagram. | `defaultStepRenderer`. See default value in #Step paragraph.  |
+| renderStep    | `(e:HoverLineRenderer) => ReactNode` | If you pass null, the default step renderer will be disabled. If you pass a renderer function, it will create steps for every point on the diagram. | `defaultStepRenderer`. See default value in #Step paragraph.  |
 | renderHoverLine | `(e:SeparatedTooltipRendererParams) => ReactNode` | If you pass null, the default hover line renderer will be disabled. If you pass a renderer function, it will be run multiple times for every point in hovered line. | `defaultHoverLineRenderer` See default value in #HoverLine paragraph |
+| selectedIndex | number | selected index to show tooltip or lines. | `undefined` |
+| onSelect      | (index?:number)=>void | triggered when `selectedIndex` changes. | `undefined` |
+| selectTrigger   | 'hover', 'click' or null | trigger of changing selectedIndex. | `hover` |
+| deselectTrigger | 'leave', 'blur' or null | trigger of deselecting. | `leave` |
 
 
 #### Labels

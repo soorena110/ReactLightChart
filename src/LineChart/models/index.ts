@@ -22,6 +22,11 @@ export type LineChartProps<TData extends DataType> = {
     indexAxis?: IndexesAxisInfo | ((e: ValuesInfo) => IndexesAxisInfo);
     valueAxis?: ValuesAxisInfo | ((e: ValuesInfo) => ValuesAxisInfo);
 
+    selectTrigger?: 'hover' | 'click' | null;
+    deselectTrigger?: 'leave' | 'blur' | null;
+    selectedIndex?: number;
+    onSelect?: (index?: number) => void;
+
     overrideSizes?: LineChartSizes;
 
     renderTooltip?: null | ((params: TooltipRendererParams<TData>) => React.ReactNode);

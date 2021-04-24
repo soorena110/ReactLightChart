@@ -111,5 +111,8 @@ LineChart.defaultProps = {
                        r={3}
                        style={circleStyle}
                        stroke={color}/>;
-    }
+    },
+
+    selectTrigger: 'hover',
+    deselectTrigger: 'leave',
 } as Partial<LineChartProps<any>>;

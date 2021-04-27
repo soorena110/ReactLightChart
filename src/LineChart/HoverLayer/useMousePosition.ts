@@ -1,10 +1,10 @@
 import { useChartContext } from '../context';
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export default function useMousePosition() {
     const {offsets, dataMapper: {indexes}, props: {onSelect, selectedIndex}} = useChartContext();
-    const [mouseXByPercent, setMouseXByPercent] = useState<number>();
+    const [pointIndex, setPointIndex] = useState<number>();
 
     const handler = useCallback(function (e: React.MouseEvent<HTMLDivElement>) {
         const bound = e.currentTarget.getBoundingClientRect();
@@ -21,17 +21,19 @@ export default function useMousePosition() {
 
         if (mouseXByPercent < 0) mouseXByPercent = 0;
         if (mouseXByPercent > 1) mouseXByPercent = 1;
-        setMouseXByPercent(mouseXByPercent);
+
+        const pointIndex = mouseXByPercent != undefined ? Math.round(mouseXByPercent * (indexes.length - 1)) : undefined;
+        setPointIndex(pointIndex);
+        onSelect && onSelect(pointIndex);
+    }, [onSelect]);
+
+    const deselect = useCallback(() => {
+        setPointIndex(undefined);
+        onSelect && onSelect(undefined);
     }, []);
 
-    const deselect = useCallback(() => setMouseXByPercent(undefined), []);
-
-    const pointIndex = mouseXByPercent != undefined ? Math.round(mouseXByPercent * (indexes.length - 1)) : undefined;
-
-    useEffect(() =>onSelect && onSelect(pointIndex), [pointIndex, onSelect]);
-
     return {
-        pointIndex: selectedIndex || pointIndex,
+        pointIndex: selectedIndex != undefined ? selectedIndex : pointIndex,
         handler,
         deselect
     };

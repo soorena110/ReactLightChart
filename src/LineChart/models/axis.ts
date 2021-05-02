@@ -1,5 +1,5 @@
-import {SVGProps} from "react";
 import * as React from "react";
+import { SVGProps } from "react";
 
 type AxisInfo = {
     linesCount?: number | null;
@@ -8,13 +8,13 @@ type AxisInfo = {
 }
 
 export type IndexesAxisInfo = AxisInfo & {
-    renderLabels?: (value: string | number) => React.ReactNode;
+    renderLabels?: (value: string | number, index: number) => React.ReactNode;
 }
 
 export type ValuesAxisInfo = IndexesAxisInfo & {
     minimumValue?: number;
     maximumValue?: number;
-    renderLabels?: (value: number) => React.ReactNode;
+    renderLabels?: (value: number, index: number) => React.ReactNode;
 }
 
 export type ValuesInfo = {

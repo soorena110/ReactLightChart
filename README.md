@@ -169,7 +169,7 @@ type IndexesAxisInfo = {
     linesProps?: SVGProps<SVGLineElement>;  // How do the lines look like?! It's the style of the lines.
     rotation?: number;                      // rotation of labels shown below of diagram.
 
-    renderLabels?: (value: string | number) => React.ReactNode; // If you want to map or show labels of indexes different, you can use this function to change them.
+    renderLabels?: (value: string | number, index: number) => React.ReactNode; // If you want to map or show labels of indexes different, you can use this function to change them.
 }
 ```
 
@@ -222,7 +222,7 @@ type ValuesAxisInfo = {
 
     minimumValue?: number;                  // the minimum value on the chart, used when you want to scale the chart.
     maximumValue?: number;                  // the maximum value on the chart, used when you want to scale the chart.
-    renderLabels?: (value: number) => React.ReactNode; // If you want to map or show labels of indexes different, you can use this function to change them.
+    renderLabels?: (value: number, index: number) => React.ReactNode; // If you want to map or show labels of indexes different, you can use this function to change them.
 }
 ```
 

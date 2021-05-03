@@ -8,6 +8,8 @@ export default function ValueCurves() {
     const context = useChartContext();
     const {dataMapper: {estimatedValuesGroup}} = context;
 
+    if (!estimatedValuesGroup.length) return null;
+
     return <>
         {estimatedValuesGroup[0].map((_, lineNumber) =>
             <Gradient lineNumber={lineNumber} key={lineNumber}/>

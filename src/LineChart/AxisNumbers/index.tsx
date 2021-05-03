@@ -13,6 +13,7 @@ function renderValuesNumbers() {
     const {offsets, dataMapper: {axisInfo: {valueAxis}, valuesAxisLinesInfo}} = useChartContext();
 
     return valuesAxisLinesInfo.map((r, index) => {
+        if(!isFinite(r.value))return null;
         const y = offsets.top + offsets.innerHeight * (1 - r.percent);
 
         return <span key={"hor_" + index}

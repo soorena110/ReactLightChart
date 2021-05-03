@@ -8,6 +8,7 @@ export default function HoverLine({pointIndex}: { pointIndex?: number }) {
     if (pointIndex == undefined || !renderHoverLine) return null;
 
     const xValueInThisIndex = estimatedValuesGroup[pointIndex];
+    if (!xValueInThisIndex) return null;
 
     return <>
         {xValueInThisIndex.map((y, lineIndex) => {

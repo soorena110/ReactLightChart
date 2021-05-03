@@ -6,12 +6,14 @@ import { getPointPosition } from '../ValueCurves/utils';
 export default function Tooltip({pointIndex}: { pointIndex?: number }) {
     const context = useChartContext();
     const {props, dataMapper: {valuesGroup, estimatedValuesGroup}} = context;
-    if (pointIndex == undefined ) return null;
+    if (pointIndex == undefined) return null;
 
     const estimatedValues = estimatedValuesGroup[pointIndex];
     const values = valuesGroup[pointIndex];
 
     const fixOffset = 5;
+
+    if (!estimatedValues) return null;
 
     if (props.renderSeparatedTooltip) {
         return <>

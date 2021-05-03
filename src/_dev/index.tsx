@@ -1,12 +1,13 @@
 import * as React from 'react';
-import {useState} from 'react';
-import {render} from "react-dom";
+import { useState } from 'react';
+import { render } from "react-dom";
 import LineChart from "../LineChart";
-import {data1} from "./lineChartProps1";
-import {data2} from "./lineChartProps2";
-import {data3} from "./lineChartProps3";
+import { data1 } from "./lineChartProps1";
+import { data2 } from "./lineChartProps2";
+import { data3 } from "./lineChartProps3";
 import { data4 } from './lineChartProps4';
 import { data5 } from './lineChartProps5';
+import { data_empty } from './lineChartProps_empty';
 
 
 const lineChartExamples = [
@@ -15,10 +16,11 @@ const lineChartExamples = [
     {data: data3, name: 'Multiple lines'},
     {data: data4, name: 'example 1'},
     {data: data5, name: 'example 2'},
+    {data: data_empty, name: 'empty'}
 ];
 
 function DemoApplication() {
-    const [selectedChart, setSelectedChart] = useState(4)
+    const [selectedChart, setSelectedChart] = useState(5);
     const selectedChartProps = lineChartExamples[selectedChart].data as any;
 
     return <>
@@ -31,7 +33,7 @@ function DemoApplication() {
             </select>
         </label>
         <LineChart {...selectedChartProps} style={{width: 500, height: 400}}/>
-    </>
+    </>;
 }
 
 render(

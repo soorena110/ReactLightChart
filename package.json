@@ -57,7 +57,7 @@
     "react-dom": "^16.8.3",
     "react-test-renderer": "^16.8.3",
     "rimraf": "^3.0.2",
-    "semantic-release": "^15.13.3",
+    "semantic-release": "^17.2.3",
     "tslint": "^5.13.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-react": "^3.6.0",
